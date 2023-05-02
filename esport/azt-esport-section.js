@@ -233,7 +233,7 @@ export default class AztEsportSection extends HTMLElement {
 
 	generateTeam(team) {
 		return /*html*/`
-			<div class="team" style="--bg:url(esport/media/csgo-wallpaper.jpg);">
+			<div class="team" style="--bg:url(./esport/media/csgo-wallpaper.jpg);">
 				<h1 class="team-name"> ${team.id} </h1>
 				<section class="players">
 					${team.players.map(player => /*html*/`

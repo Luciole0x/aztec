@@ -60,7 +60,7 @@ class Router {
 			[SECTION.ACTUALITE]: [ AztActualiteSection ],
 			[SECTION.EVENT]: [ AztEventSection ],
 			[SECTION.ESPORT]: [ AztEsportSection ],
-			[SECTION.RESEAUX]: [ [AztTemplateSection,'/template/reseaux.tpl.js'] ],
+			[SECTION.RESEAUX]: [ [AztTemplateSection,'./template/reseaux.tpl.js'] ],
 		}
 
 		window.addEventListener('hashchange', (e) => this.route(e))

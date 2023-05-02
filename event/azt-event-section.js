@@ -338,13 +338,13 @@ export default class AztEventSection extends HTMLElement {
 	generatePreview(event, route) {
 		return /*html*/`
 			<a class="preview" href="#/${SECTION.EVENT}/${event.id}"
-					style="--bg:url('/event/data/${event.id}/image.webp');">
-				<video class="video-background" data-src="/event/data/${event.id}/video.webm" loop autoplay muted></video>
+					style="--bg:url('./event/data/${event.id}/image.webp');">
+				<video class="video-background" data-src="./event/data/${event.id}/video.webm" loop autoplay muted></video>
 				<div class="particle pa"></div>
 				<div class="particle pb"></div>
 				<div class="particle pc"></div>
 				<div class="particle pd"></div>
-				<img class="title" src="/event/data/${event.id}/image.webp" width=""/>
+				<img class="title" src="./event/data/${event.id}/image.webp" width=""/>
 				${this.parseTime(event.id, event.end)}
 			</a> `
 	}
