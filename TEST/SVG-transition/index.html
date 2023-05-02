@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body {
+			position: absolute;
+			margin: 0;
+			padding: 0;
+			height: 100vh;
+			width: 100vw;
+		}
+
+		#container {
+			position: relative;
+			height: 600px;
+			width: 600px;
+		}
+
+		.bg-transition {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<svg id="clip-background" height="200" width="200" viewBox="0 0 200 200">
+		<filter id="displacementFilter">
+			<feTurbulence
+				type="turbulence"
+				baseFrequency="0.05"
+				numOctaves="2"
+				result="turbulence" />
+			<feDisplacementMap
+				in2="turbulence"
+				in="SourceGraphic"
+				scale="50"
+				xChannelSelector="R"
+				yChannelSelector="G" />
+		</filter>
+		<circle  cx="-100vmax" cy="0" r="100" fill="black" style="filter: url(#displacementFilter)">
+			<animate attributeName="r" begin="0s" dur="3s" from="0" to="100" values="0;150;100" calcMode="spline"
+				keySplines="0.2 0.7 0.4 0; 0 0 1 1"/>
+		</circle>
+	</svg>
+
+	<div id="container" style="background-image: url('img/BG-1.png');">
+		<div class="bg-transition"></div>
+	</div>
+	<azt-test></azt-test>
+	<azt-test></azt-test>
+
+	<script>
+		/** @type HTMLDivElement */let container = document.querySelector('#container')
+		/** @type HTMLDivElement */let transition = document.querySelector('.bg-transition')
+		let circle = document.querySelector('circle')
+
+		document.body.addEventListener('click', e => {
+			transition.style.backgroundImage = 'url("img/BG-2.png")'
+			console.log('click:', e)
+			circle.setAttribute('cx', e.pageX)
+			circle.setAttribute('cy', e.pageY)
+			circle.firstElementChild.beginElement()
+		})
+
+		class AztTest extends HTMLElement {
+			constructor() {
+				super()
+				this.attachShadow({mode:'open'})
+				this.shadowRoot.innerHTML = /*html*/`
+					<style>
+						.test {
+							height: 40px;
+							width: 40px;
+							border: solid 4px red;
+						}
+					</style>
+					<div class="test">
+						T
+					</div>`
+			}
+		}
+		customElements.define('azt-test', AztTest)
+
+
+		var sheet = new CSSStyleSheet
+		sheet.replaceSync( `.test { background: green; }`)
+
+		let nodes = document.querySelectorAll('azt-test')
+		for (let node of nodes.values())
+			node.shadowRoot.adoptedStyleSheets = [ sheet ]
+
+	</script>
+</body>
+</html>

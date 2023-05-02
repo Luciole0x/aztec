@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title> Aztec </title>
+		<link rel="icon" href="favicon.svg" type="image/svg+xml">
+		<style>
+			body {
+				--primary-background: 33 101 56; /*204, 191, 122 | 80,190,110*/
+				--secondary-background: 225 195 40; /*150, 204, 122 | 234,179,67*/
+			}
+
+			body {
+				font-size: 18pt;
+				padding: 0;
+				margin: 0;
+				font-family: roboto, sans-serif;
+				color: white;
+				height: 100vh;
+				overflow: hidden;
+				display: grid;
+				grid-template: 60px 1fr / 1fr;
+				background-color: rgb(var(--primary-background));
+				background-position: top;
+				background-size: contain;
+				background-attachment: fixed;
+				background-repeat: no-repeat;
+			}
+
+			a {
+				color: inherit;
+			}
+
+			#container {
+				overflow: hidden scroll;
+				padding-top: 80px;
+				position: relative;
+				grid-area: 1/1/3/2;
+			}
+
+			#background {
+				position: fixed;
+				z-index: -1;
+				top: 80px;
+				height: calc(100% - 80px);
+				width: 100%;
+			}
+
+			#background > use {
+				opacity: 0.2;
+				transition: opacity 240ms ease-out;
+			}
+
+		</style>
+	</head>
+	<body>
+		<svg id="background" viewbox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+			<use xlink:href="media/logo.svg#svg5"></use>
+		</svg>
+		<header is="azt-header" id="header"></header>
+		<section id="container"></section>
+		<script defer src="azt-app.js" type="module"></script>
+	</body>
+</html>

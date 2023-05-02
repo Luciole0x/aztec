@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		path {
+			stroke: none;
+			fill: #888;
+		}
+
+		 svg {
+			height: 500px;
+			width: 500px;
+			display: inline-block;
+		 }
+	</style>
+</head>
+<body>
+	<script>
+	const template = document.createElement('template')
+	const path = []
+	for (let i=0; i<100000; i++)
+		path.push(`M${(i%30)*12+10},${Math.floor(i/30)*12+10} l-5,5 l10,0`)
+
+	template.innerHTML = /*html*/`
+		<svg id="svg-a" viewbox="0 0 1000 1000"> <path d="${path.join('z ')}"></path> </svg>
+		<svg id="svg-b" viewbox="0 0 1000 1000"> ${ path.map(p => ` <path d="${p}"></path> `) } </svg> `
+	document.body.appendChild(template.content)
+
+	let svgA = document.body.querySelector('#svg-a')
+	let svgB = document.body.querySelector('#svg-b')
+	svgA.remove()
+	svgB.remove()
+
+	for (let i=0; i<10; i++) {
+		console.time('single');
+				document.body.appendChild(svgA)
+
+		console.timeEnd('single');
+		svgA.remove()
+		console.time('multiple');
+				document.body.appendChild(svgB)
+
+
+		console.timeEnd('multiple');
+		svgB
+	}
+	</script>
+</body>
+</html>
