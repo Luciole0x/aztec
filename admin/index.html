@@ -2,81 +2,12 @@
 <html>
 	<head>
 		<style>
-			body {
-				padding: 0;
-				margin: 0;
+			html {
+				overflow: hidden;
 			}
-
-			#container {
-				box-shadow: inset 0 0 2px red;
-				margin: 8px auto;
-			}
-
-			.bold {
-				font-weight: bold;
-			}
-
-			.underline {
-				text-decoration: underline;
-			}
-
 		</style>
 	</head>
-	<body>
-		<header is="azt-header" id="header"></header>
-		<section id="container" contenteditable="true">
-			test <span class="bold">some</span> <span class="underline">value</span> 
-		</section>
-		<div class="cursor-info"></div>
-
-		<script>
-			const container = document.querySelector('#container')
-			container.addEventListener('input', (e) => {
-			})
-
-
-			document.addEventListener('selectionchange', e => {
-				let selection = document.getSelection()
-				console.log(selection)
-				selection.anchorNode
-
-
-			})
-
-			function caretPosition (oField) {
-
-				// Initialize
-				var iCaretPos = 0;
-
-				// IE Support
-				if (document.selection) {
-
-				// Set focus on the element
-				oField.focus();
-
-				// To get cursor position, get empty selection range
-				var oSel = document.selection.createRange();
-
-				// Move selection start to 0 position
-				oSel.moveStart('character', -oField.value.length);
-
-				// The caret position is selection length
-				iCaretPos = oSel.text.length;
-				}
-
-				// Firefox support
-				else if (oField.selectionStart || oField.selectionStart == '0')
-				iCaretPos = oField.selectionDirection=='backward' ? oField.selectionStart : oField.selectionEnd;
-
-				// Return results
-				return iCaretPos;
-			}
-
-
-
-
-
-
-		</script>
+	<body is="admin-app">
+		<script src="./admin-app.js" type="module"></script>
 	</body>
 </html>
