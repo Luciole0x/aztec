@@ -185,7 +185,7 @@ const fragment = (() => {
 
 /**
  * @typedef {Object} eventData
- * @property {string} id
+ * @property {number} id
  * @property {number} start
  * @property {number} end
  * @property {string[]} tags - Les différents tags de l'evenement see "TAGS".
