@@ -3,6 +3,9 @@ import { IncomingMessage, ServerResponse } from 'http'
 import querystring from 'querystring'
 import fs, { promises as fsP } from 'fs'
 import path from 'path'
+import AdminData from './admin-data.js'
+
+const DT = AdminData.TYPE
 
 const EXT_TO_MIME = new Map([
 	['default', 'application/octet-stream'              ],
@@ -21,14 +24,15 @@ const EXT_TO_MIME = new Map([
 
 const P = {
 	NUMBER: v => Number(v.toString()),
+	NUMBER_ARRAY: v => v.toString().split(',').map(Number),
 	STRING: v => v.toString(),
 	BUFFER: v => v,
 }
 
 export default class AdminRouter {
-	constructor(dirname, port) {
-		this.dirname = dirname
-		this.port = port
+	/** @param {import('../admin-server.js').default} server */
+	constructor(server) {
+		this.server = server
 
 		this.tree = {
 			event: {
@@ -45,9 +49,8 @@ export default class AdminRouter {
 
 	/**
 	 * @param {IncomingMessage} req
-	 * @param {ServerResponse} res
-	 */
-	async route (req, res) {
+	 * @param {ServerResponse} res */
+	route (req, res) {
 		if (req.method === 'GET')
 			return this.getStaticFile(req, res)
 
@@ -58,18 +61,22 @@ export default class AdminRouter {
 		for (let i=0; target && i<path.length;)
 			target = target[path[i++]]
 
-		return target ?
-			target.call(this, req, res) :
+	//	if(target)
+	//		target.call(this, req, res)
+	//			.catch(err => {
+	//				console.log(err)
+	//				this.jsonResponse(res, 500, err.stack)
+	//			})
+	//	else
 			this.jsonResponse(res, 404, 'Not Found')
 	}
 
 	/**
 	 * @param {IncomingMessage} req
-	 * @param {ServerResponse} res
-	 */
+	 * @param {ServerResponse} res */
 	getStaticFile(req, res) {
 		const url = req.url.split(/[?#]/)[0].split('/').slice(1).join('/')
-		let localPath = path.join(this.dirname, '../', url)
+		let localPath = path.join(this.server.root, url)
 
 		let extName = path.extname(localPath)
 		if (extName === '') {
@@ -95,8 +102,11 @@ export default class AdminRouter {
 			})
 	}
 
-	/** @param {IncomingMessage} req */
-	async parseBody(req, body) {
+	/**
+	 * @param {IncomingMessage} req
+	 * @param {Object} bodyTemplate
+	 * @return {Promise<Object>} */
+	async parseFormBody(req, bodyTemplate) {
 		const chunks = []
 		/**@type {Buffer}*/let payload = 
 			await new Promise((resolve, reject) => {
@@ -115,7 +125,7 @@ export default class AdminRouter {
 			Buffer.from('name="'),   //startName
 			Buffer.from('"'),        //endName
 			Buffer.from('\r\n\r\n'), //startData
-			payload.subarray(0, i),     //token
+			payload.subarray(0, i),  //token
 		]
 		let targetIndex = 0
 		let target = targets[0]
@@ -130,19 +140,34 @@ export default class AdminRouter {
 				boundaries.push(i)
 			}
 
+		const body = {}
 		for (i=0; i<boundaries.length; i+=4) {
 			let key = payload.subarray(boundaries[i]+1, boundaries[i+1]).toString()
 			let value = payload.subarray(boundaries[i+2]+1, boundaries[i+3]-targets[3].length-1)
-			body[key] = body[key](value)
+			body[key] = bodyTemplate[key](value)
 		}
 
 		return body
 	}
 
 	/**
+	 * @param {IncomingMessage} req
+	 * @return {Promise<Object>} */
+	async parseJsonBody(req) {
+		const chunks = []
+		/**@type {Buffer}*/let payload = 
+			await new Promise((resolve, reject) => {
+				req.on('data', (data) => chunks.push(data))
+				req.on('end', () => resolve(Buffer.concat(chunks).toString()))
+				req.on('error', reject)
+			})
+		return JSON.parse(payload)
+	}
+
+	/**
 	 * @param {ServerResponse} res
 	 * @param {number} statusCode
-	 * @param {any} data 
+	 * @param {any} data
 	 */
 	jsonResponse(res, statusCode, data) {
 		res.writeHead(statusCode, { 'Content-Type': 'application/json' })
@@ -150,18 +175,21 @@ export default class AdminRouter {
 	}
 
 	async postEvent(req, res) {
-		const body = await this.parseBody(req, { 
-			id:     P.NUMBER,
-			start:  P.STRING,
-			end:    P.STRING,
-			title:  P.STRING,
-			banner: P.BUFFER })
-
-		await fsP.writeFile(`${this.dirname}/test.webp`, body.banner, 'binary')
+		const eventItem = await this.parseFormBody(req, {
+			id:      P.NUMBER,
+			start:   P.STRING,
+			end:     P.STRING,
+			tags:    P.NUMBER_ARRAY,
+			title:   P.STRING,
+			banner:  P.BUFFER,
+			preview: P.BUFFER })
+		await this.server.data.saveItem(DT.EVENT, eventItem)
 		this.jsonResponse(res, 200, '')
 	}
-	deleteEvent(req, res) {
-
+	async deleteEvent(req, res) {
+		const id = await this.parseJsonBody(req)
+		await this.server.data.deleteItem(DT.EVENT, id)
+		this.jsonResponse(res, 200, '')
 	}
 
 	postEsport() {}
