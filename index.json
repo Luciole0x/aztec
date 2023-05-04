@@ -1,6 +1,6 @@
 {
 	"events":[
-		{"id":6,"start":"2023-05-18T11:14","end":"2023-05-24T11:14","tags":[2],"title":"Création UPDATED"},
+		{"id":6,"start":"2023-05-18T11:14","end":"2023-05-24T11:14","tags":[],"title":"Création UPDATED"},
 		{"id":5,"start":"2022-05-02T23:40","end":"2022-05-28T23:40","tags":[3,2,1],"title":"OldEvent"},
 		{"id":4,"start":"2023-10-02T23:40","end":"2023-12-02T23:40","tags":[3,1],"title":"Active UPDATE"},
 		{"id":3,"start":"2023-01-02T23:40","end":"2023-03-28T23:40","tags":[3],"title":"ParchoMancia UPDA"},
@@ -18,9 +18,15 @@
 		{"id":1,"name":"Dofus","offset":[1,0]}
 	],
 	"teams":[
-		{"id":1,"tag":1,"name":null,"players":[1,2,3]}
+		{"id":2,"name":"New Team !","tag":3,"players":[1,2],"coaches":[1,3]},
+		{"id":1,"tag":3,"name":"Test Team UPDATED","players":[1,3],"coaches":[2]}
 	],
 	"players":[
-		{"id":1,"name":"Luciole","role":"Support","contacts":"xbox:pseudo#12345|bnet:pseudo#12345"}
+		{"id":1,"name":"PlayerA","role":"Support"},
+		{"id":2,"name":"PlayerB","role":"Dps"},
+		{"id":3,"name":"PlayerC","role":"Tank"}
+	],
+	"coaches":[
+		{"id":1,"name":"Player","role":"Coach","contact":"bnet|player#0001,discord|player#0001"}
 	]
 }
