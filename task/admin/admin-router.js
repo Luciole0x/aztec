@@ -24,7 +24,7 @@ const EXT_TO_MIME = new Map([
 
 const P = {
 	NUMBER: v => Number(v.toString()),
-	NUMBER_ARRAY: v => v.toString().split(',').map(Number),
+	NUMBER_ARRAY: v => v.toString().split(',').filter(v=>v).map(Number),
 	STRING: v => v.toString(),
 	BUFFER: v => v,
 }
@@ -37,20 +37,19 @@ export default class AdminRouter {
 		this.tree = {
 			event: {
 				POST: this.postEvent,
-				DELETE: this.deleteEvent,
-			},
+				DELETE: this.deleteEvent },
 			tag: {
 				POST: this.postTag,
-				DELETE: this.deleteTag,
-			},
+				DELETE: this.deleteTag },
 			news: {
 				POST: this.postNews,
-				DELETE: this.deleteNews,
-			},
-
-			esport: {
-				POST: this.postEsport,
-			}
+				DELETE: this.deleteNews },
+			team: {
+				POST: this.postTeam,
+				DELETE: this.deleteTeam,
+				player: {
+					POST: this.postPlayer,
+					DELETE: this.deletePlayer }, },
 		}
 
 		this.route = this.route.bind(this)
@@ -225,12 +224,45 @@ export default class AdminRouter {
 			article:     P.STRING,
 			banner:      P.BUFFER,
 			thumbnail:   P.BUFFER })
-
 		newsItem.preview = this.article.slice(0,250).replace(/<.*?>/g, '').slice(0,200)
+		await this.server.data.saveItem(DT.NEWS, newsItem)
+		this.jsonResponse(res, 200, '')
 	}
 	async deleteNews(req, res) {
 		const id = await this.parseJsonBody(req)
 		await this.server.data.deleteItem(DT.NEWS, id)
+		this.jsonResponse(res, 200, '')
+	}
+
+	async postTeam(req, res) {
+		const teamItem = await this.parseFormBody(req, {
+			id:          P.NUMBER,
+			tag:         P.NUMBER,
+			name:        P.STRING,
+			players:     P.NUMBER_ARRAY,
+			coaches:     P.NUMBER_ARRAY })
+		await this.server.data.saveItem(DT.TEAM, teamItem)
+		this.jsonResponse(res, 200, '')
+	}
+	async deleteTeam(req, res) {
+		const id = await this.parseJsonBody(req)
+		await this.server.data.deleteItem(DT.TEAM, id)
+		this.jsonResponse(res, 200, '')
+	}
+
+	async postPlayer(req, res) {
+		const playerItem = await this.parseFormBody(req, {
+			id: P.NUMBER,
+			name: P.STRING,
+			role: P.STRING,
+			contact: P.STRING,
+			picture: P.BUFFER })
+		await this.server.data.saveItem(DT.PLAYER, playerItem)
+		this.jsonResponse(res, 200, '')
+	}
+	async deletePlayer(req, res) {
+		const id = await this.parseJsonBody(req)
+		await this.server.data.deleteItem(DT.PLAYER, id)
 		this.jsonResponse(res, 200, '')
 	}
 }

@@ -61,8 +61,8 @@ export default class InputIcon extends HTMLElement {
 	
 	set value(newValue) {
 		if ((typeof newValue) === 'string')
-			newValue = newValue.split(',')
-		this._value = newValue.map(Number)
+			newValue = newValue.split(',').filter(v=>v).map(Number)
+		this._value = newValue
 		this._hover = { x:-1, y:-1 }
 		this.updatePath(this._value[0], this._value[1])
 

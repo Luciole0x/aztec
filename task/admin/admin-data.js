@@ -26,14 +26,20 @@ import path from 'path'
  * @typedef {Object} TagData
  * @property {number} id
  * @property {string} name
- * @property {number} offX
- * @property {number} offY
+ * @property {number[]} offset
  *
  * @typedef {Object} TeamData
  * @property {number} id
- * @property {string?} name
+ * @property {string} name
  * @property {number} tag
  * @property {number[]} players
+ * @property {number[]} coatchs
+ * 
+ * @typedef {Object} PlayerData
+ * @property {number} id
+ * @property {string} name
+ * @property {string} role
+ * @property {string} contact
  */
 
 /**
@@ -47,10 +53,9 @@ import path from 'path'
 
 const TYPE = {
 	EVENT: {
-		path:'app/event/data',
+		path:'app/event',
 		indexField:'events',
 		itemFields: new Set(['id', 'start', 'end', 'tags', 'title']),
-		/**@param {ad} */
 		saveItem: async function(ad, event) {
 			const eventPath = path.join(ad.server.root, this.path, `${event.id}`)
 			await fsP.mkdir(eventPath, {recursive:true})
@@ -75,10 +80,7 @@ const TYPE = {
 					['background.svg', tag.background],
 				])
 		},
-		/**@param {AdminData} ad */
 		deleteItem: function(ad, id) {
-			let eventPath = path.join(ad.server.root, this.path, `${id}`)
-
 			for (let event of ad.rawIndex.events)
 				event.tags = event.tags.filter(tag => tag !== id)
 			for (let news of ad.rawIndex.news)
@@ -87,11 +89,12 @@ const TYPE = {
 				if (team.tag === id)
 					team.tag = null
 
+			let eventPath = path.join(ad.server.root, this.path, `${id}`)
 			return fsP.rm(eventPath, {recursive:true, force:true})
 		},
 	},
 	NEWS: {
-		path:'app/news/data',
+		path:'app/news',
 		indexField:'news',
 		itemFields: new Set(['id', 'publication', 'tags', 'title']),
 		saveItem: async function(ad, news) {
@@ -105,9 +108,37 @@ const TYPE = {
 		deleteItem: async function(ad, id) {
 			let newsPath = path.join(ad.server.root, this.path, `${id}`)
 			return fsP.rm(newsPath, {recursive:true, force:true})
-		}
+		},
 	},
-	ESPORT: { path:'app/esport/data', indexField:'teams' },
+	TEAM: {
+		path: 'app/team',
+		indexField: 'teams',
+		itemFields: new Set(['id', 'name', 'tag', 'players', 'coaches']),
+		saveItem: async function() {},
+		deleteItem: async function() {},
+	},
+	PLAYER: {
+		path: 'app/team/player',
+		indexField: 'players',
+		itemFields: new Set(['id', 'name', 'role', 'contact']),
+		saveItem: async function(ad, player) {
+			const playerPath = path.join(ad.server.root, this.path, `${player.id}`)
+			await fsP.mkdir(playerPath, {recursive:true})
+			return ad.saveFiles(playerPath, [
+					['picture.webp', news.picture],
+				])
+		},
+		/**@param {AdminData}ad */
+		deleteItem: async function(ad, id) {
+			for (let team of ad.rawIndex.teams) {
+				team.players = team.players.filter(player => player !== id)
+				team.coaches = team.coaches.filter(player => player !== id)
+			}
+
+			let newsPath = path.join(ad.server.root, this.path, `${id}`)
+			return fsP.rm(newsPath, {recursive:true, force:true})
+		},
+	}
 }
 
 export default class AdminData {

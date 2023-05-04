@@ -1,4 +1,5 @@
 import InputTag from './input-tag.js'
+import InputPlayer from './input-player.js'
 
 const template = /*html*/`
 <style>
@@ -131,6 +132,11 @@ const template = /*html*/`
  * @property {TeamData[]} teams
  * @property {Players[]} players
  *
+ * @typedef {Object} TagData
+ * @property {number} id
+ * @property {string} name
+ * @property {number[]} offset
+ *
  * @typedef {Object} EventData
  * @property {number} id
  * @property {string} start - YYYY-MM-DDThh:mm
@@ -145,17 +151,19 @@ const template = /*html*/`
  * @property {string} title
  * @property {string} preview
  *
- * @typedef {Object} TagData
- * @property {number} id
- * @property {string} name
- * @property {number} offX
- * @property {number} offY
  *
  * @typedef {Object} TeamData
  * @property {number} id
- * @property {string?} name
+ * @property {string} name
  * @property {TagData} tag
  * @property {PlayerData[]} players
+ * @property {PlayerData[]} coaches
+ *
+ * @typedef {Object} PlayerData
+ * @property {number} id
+ * @property {string} name
+ * @property {string} role
+ * @property {string} contact
  */
 
 export default class AdminApp extends HTMLBodyElement {
@@ -172,9 +180,10 @@ export default class AdminApp extends HTMLBodyElement {
 		this.index = {
 			data: { events:[], news:[], teams:[],
 				tags: InputTag.TAGS,
-				players:[] },
+				players: InputPlayer.PLAYERS,
+				coaches: [] },
 			tags: new Map(),
-			players: new Map(),
+			players: InputPlayer.PLAYERS_MAP,
 		}
 
 		this.getIndexData(true)
@@ -211,13 +220,17 @@ export default class AdminApp extends HTMLBodyElement {
 
 		for (let field of ['events', 'news', 'teams', 'tags', 'players'])
 			data[field].splice(0, data[field].length, ...updatedData[field])
+		data.players.sort((a,b) => a.name < b.name)
 
 		tags.clear()
 		for (let tag of data.tags)
 			tags.set(tag.id, tag)
+
 		players.clear()
-		for (let player of data.players)
+		for (let player of data.players) {
 			players.set(player.id, player)
+			players.set(player.name, player)
+		}
 
 
 		for (let event of data.events)
@@ -232,6 +245,8 @@ export default class AdminApp extends HTMLBodyElement {
 			team.tag = tags.get(team.tag)
 			for (let i=0; i<team.players.length; i++)
 				team.players[i] = players.get(team.players[i])
+			for (let i=0; i<team.coaches.length; i++)
+				team.coaches[i] = players.get(team.coaches[i])
 		}
 
 		return this.index.data

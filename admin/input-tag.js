@@ -36,10 +36,11 @@ export default class InputTag extends HTMLElement {
 	constructor() {
 		super()
 		this.internals = this.attachInternals()
-		this.attachShadow({mode:'open', delegatesFocus:true})
+		this.attachShadow({mode:'open'})
 		this.shadowRoot.innerHTML = `${template}${this.buildTags()}`
 		this.shadowRoot.addEventListener('click', this.dispatchAction.bind(this))
 		this.setAttribute('tabindex', '0')
+		this._value = []
 	}
 
 	buildTags() {
@@ -51,33 +52,37 @@ export default class InputTag extends HTMLElement {
 	}
 
 	set value(newValue) {
-		newValue = ((typeof newValue) === 'string') ?
-			newValue.split(',') :
-			newValue.map(v => `${v}`)
-		newValue = new Set(newValue)
+		if ((typeof newValue) === 'string')
+			newValue = newValue.split(',').filter(v=>v).map(Number)
+
+		if (this.hasAttribute('data-single'))
+			newValue.splice(1, newValue.length)
+		this._value = newValue
 
 		for (let tag of this.shadowRoot.children)
-			newValue.has(tag.dataset.id) ?
+			newValue.includes(Number(tag.dataset.id)) ?
 				tag.setAttribute('selected', '') :
 				tag.removeAttribute('selected')
 
-		this.internals.setFormValue(this.value)
-		this.internals.setValidity({})
+		this.validate()
 	}
 
 	get value() {
-		return Array.from(this.shadowRoot.querySelectorAll('[selected]'))
-			.map(tag => tag.dataset.id)
-			.join(',')
+		return this._value
 	}
 
 	dispatchAction(e) {
 		if (!e.target.classList.contains('tag'))
 			return
-		e.target.hasAttribute('selected') ?
-			e.target.removeAttribute('selected') :
-			e.target.setAttribute('selected', '')
-		this.internals.setFormValue(this.value)
+
+		const id = Number(e.target.dataset.id)
+		this.value = this._value.includes(id) ?
+			this._value.filter(v => v!==id) :
+			[id, ...this._value]
+	}
+
+	validate() {
+		this.internals.setFormValue(this._value.join())
 		this.internals.setValidity({})
 	}
 }

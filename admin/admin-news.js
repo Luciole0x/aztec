@@ -1,6 +1,5 @@
 import AdminElement from './admin-element.js'
 import InputTag from './input-tag.js'
-
 /**
  * @typedef {import('./admin-app.js').DataBase} DataBase
  * @typedef {import('./admin-app.js').NewsData} NewsData
@@ -9,7 +8,7 @@ import InputTag from './input-tag.js'
 const template = /*html*/`
 <style>
 	.row, .header {
-		grid-template: 20px / 112px 100px 1fr 20px;
+		grid-template: auto / 112px 100px 1fr 20px;
 	}
 
 	.tag {
@@ -20,6 +19,12 @@ const template = /*html*/`
 		background-size: 400% 400%;
 		background-position: calc(var(--offX) * 33.33%) calc(var(--offY) * 33.33%);
 	}
+
+	textarea {
+		resize: vertical;
+		min-height: 6em;
+	}
+
 </style>
 <div class="header">
 	<div> Publication </div>
@@ -61,28 +66,28 @@ export default class AdminNews extends AdminElement {
 			.catch(err => '')
 
 		const form = /*html*/`
-			<div class="shadow">
-				<form class="card">
-					<label> ID: </label>
-					<input type="number" name="id" value="${news.id}" readonly tabindex="-1">
-					<label> Publication*: </label>
-					<input type="datetime-local" name="publication" value="${news.publiation||''}" required>
-					<label> Tags: </label>
-					<input-tag class="input" name="tags" value="${news.tags.map(t => t.id)}"></input-tag>
-					<label> Titre*: </label>
-					<input type="text" name="title" value="${news.title||''}" maxlength="256" required>
-					<label> Article*: </label>
-					<textarea class="input" name="article" required>${article}</textarea>
-					<label> Bannière: </label>
-					<input type="file" name="banner">
-					<label> Vignette: </label>
-					<input type="file" name="thumbnail">
-					<div class="actions">
-						<button type="button" data-action="close-card"> Annuler </button>
-						<button type="button" data-action="post-item"> ${news.id?'Modifier':'Créer'} </button>
-					</div>
-				</form>
-			</div>`
+		<div class="shadow">
+			<form class="card">
+				<label> ID: </label>
+				<input type="number" name="id" value="${news.id}" readonly tabindex="-1">
+				<label> Publication*: </label>
+				<input type="datetime-local" name="publication" value="${news.publiation||''}" required>
+				<label> Tags: </label>
+				<input-tag class="input" name="tags" value="${news.tags.map(t => t.id)}"></input-tag>
+				<label> Titre*: </label>
+				<input type="text" name="title" value="${news.title||''}" maxlength="256" required>
+				<label> Article*: </label>
+				<textarea class="input" name="article" required>${article}</textarea>
+				<label> Bannière: </label>
+				<input type="file" name="banner">
+				<label> Vignette: </label>
+				<input type="file" name="thumbnail">
+				<div class="actions">
+					<button type="button" data-action="close-card"> Annuler </button>
+					<button type="button" data-action="post-item"> ${news.id?'Modifier':'Créer'} </button>
+				</div>
+			</form>
+		</div>`
 		this.shadowRoot.lastElementChild.insertAdjacentHTML('afterend', form)
 	}
 
