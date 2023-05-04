@@ -49,11 +49,63 @@ const template = /*html*/`
 
 	#notifications {
 		position: fixed;
-		bottom: 0;
-		right: 0;
+		bottom: 24px;
+		right: 32px;
+		z-index: 20;
 	}
 
 		.notification {
+			position: relative;
+			animation: display-notif ease-out 250ms;
+			background: white;
+			padding: 8px;
+			min-width: 250px;
+			max-height: 150px;
+			border-radius: 4px;
+			border: solid 1px #0008;
+			margin-bottom: 8px;
+			overflow: hidden;
+		}
+		.notification::after {
+			content:'';
+			position: absolute;
+			width: 100%;
+			height: 4px;
+			bottom: 0;
+			left: 0;
+			background: #0008;
+			transform-origin: left;
+			transform: scaleX(0);
+			animation: notif-timer 5s linear;
+		}
+		.notification:hover::after {
+			animation: none;
+		}
+		@keyframes display-notif {
+			from { opacity:0; max-height:0px; margin-bottom:-10px; }
+			50% { opacity:1; }
+			to { opacity:1; max-height:150px; margin-bottom:8px; }
+		}
+		@keyframes notif-timer {
+			from { transform: scaleX(0); }
+			to { transform: scaleX(1); }
+		}
+
+		.notification.notif-hide {
+			transform: translateX(calc(100% + 32px));
+			margin-bottom: -18px;
+			max-height: 0;
+			animation: notif-hide 400ms cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		@keyframes notif-hide {
+			from { transform: translateX(0); max-height:150px; margin-bottom:8px; }
+			35% { transform: translateX(calc(100% + 32px)); margin-bottom:8px; max-height:150px; }
+			to { transform: translateX(calc(100% + 32px)); margin-bottom:-18px; max-height:0; }
+		}
+
+		.notif-error {
+			background: #FDD;
+
 		}
 
 </style>
@@ -88,7 +140,7 @@ const template = /*html*/`
  *
  * @typedef {Object} NewsData
  * @property {number} id
- * @property {number} timestamp - ms
+ * @property {string} publication - YYYY-MM-DDThh:mm
  * @property {TagData[]} tags
  * @property {string} title
  * @property {string} preview
@@ -110,12 +162,12 @@ export default class AdminApp extends HTMLBodyElement {
 	constructor() {
 		super()
 		this.attachShadow({mode:'open'})
-		this.notifications = this.shadowRoot.getElementById('notifications')
+		this.shadowRoot.innerHTML = template
 
 		this.displayedLink = null
-		this.shadowRoot.innerHTML = template
-		window.addEventListener('hashchange', e=>this.onHashChange())
-		this.onHashChange()
+		this.notifications = this.shadowRoot.getElementById('notifications')
+		window.addEventListener('hashchange', this.onHashChange.bind(this))
+		this.shadowRoot.addEventListener('animationend', this.onAnimationEnd.bind(this))
 
 		this.index = {
 			data: { events:[], news:[], teams:[],
@@ -124,6 +176,9 @@ export default class AdminApp extends HTMLBodyElement {
 			tags: new Map(),
 			players: new Map(),
 		}
+
+		this.getIndexData(true)
+			.then(() => this.onHashChange())
 	}
 
 	async onHashChange() {
@@ -135,22 +190,27 @@ export default class AdminApp extends HTMLBodyElement {
 
 		if (!contentName) return
 
-		let ContentElement = (await import(`./${contentName}.js`)).default
-		if (!(this.firstElementChild instanceof ContentElement)) {
+		try {
+			let ContentElement = (await import(`./${contentName}.js`)).default
+			if (!(this.firstElementChild instanceof ContentElement)) {
+				this.firstElementChild?.remove()
+				this.appendChild(new ContentElement())
+			}
+		} catch (err) {
+			this.notify(err.message, 'error')
 			this.firstElementChild?.remove()
-			this.appendChild(new ContentElement())
 		}
 	}
 
 	async getIndexData(force) {
-		if (!force && this.index.data.tags.length)
+		if (!force)
 			return this.index.data
 
 		const updatedData = await fetch('/app/index.json').then(res => res.json())
 		const { data, tags, players } = this.index
 
 		for (let field of ['events', 'news', 'teams', 'tags', 'players'])
-			data[field].splice(0, 9999, ...updatedData[field])
+			data[field].splice(0, data[field].length, ...updatedData[field])
 
 		tags.clear()
 		for (let tag of data.tags)
@@ -177,8 +237,18 @@ export default class AdminApp extends HTMLBodyElement {
 		return this.index.data
 	}
 
-	notify(msg, type='') {
+	notify(msg, type='default') {
+		msg = msg.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;')
+		this.notifications.insertAdjacentHTML('beforeend', /*html*/`
+			<div class="notification notif-${type}"> ${msg} </div>`)
+	}
 
+	/**@param {AnimationEvent} e */
+	onAnimationEnd(e) {
+		switch (e.animationName) {
+		case 'notif-timer': e.target.classList.add('notif-hide'); break
+		case 'notif-hide': e.target.remove()
+		}
 	}
 }
 

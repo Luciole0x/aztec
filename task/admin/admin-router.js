@@ -39,6 +39,15 @@ export default class AdminRouter {
 				POST: this.postEvent,
 				DELETE: this.deleteEvent,
 			},
+			tag: {
+				POST: this.postTag,
+				DELETE: this.deleteTag,
+			},
+			news: {
+				POST: this.postNews,
+				DELETE: this.deleteNews,
+			},
+
 			esport: {
 				POST: this.postEsport,
 			}
@@ -61,13 +70,13 @@ export default class AdminRouter {
 		for (let i=0; target && i<path.length;)
 			target = target[path[i++]]
 
-	//	if(target)
-	//		target.call(this, req, res)
-	//			.catch(err => {
-	//				console.log(err)
-	//				this.jsonResponse(res, 500, err.stack)
-	//			})
-	//	else
+		if(target)
+			target.call(this, req, res)
+				.catch(err => {
+					console.log(err)
+					this.jsonResponse(res, 500, err.stack)
+				})
+		else
 			this.jsonResponse(res, 404, 'Not Found')
 	}
 
@@ -192,8 +201,36 @@ export default class AdminRouter {
 		this.jsonResponse(res, 200, '')
 	}
 
-	postEsport() {}
+	async postTag(req, res) {
+		const tagItem = await this.parseFormBody(req, {
+			id:         P.NUMBER,
+			name:       P.STRING,
+			offset:     P.NUMBER_ARRAY,
+			background: P.BUFFER })
+		await this.server.data.saveItem(DT.TAG, tagItem)
+		this.jsonResponse(res, 200, '')
+	}
+	async deleteTag(req, res) {
+		const id = await this.parseJsonBody(req)
+		await this.server.data.deleteItem(DT.TAG, id)
+		this.jsonResponse(res, 200, '')
+	}
 
-	postNews() {}
-	deleteNews() {}
+	async postNews(req, res) {
+		const newsItem = await this.parseFormBody(req, {
+			id:          P.NUMBER,
+			publication: P.STRING,
+			tags:        P.NUMBER_ARRAY,
+			title:       P.STRING,
+			article:     P.STRING,
+			banner:      P.BUFFER,
+			thumbnail:   P.BUFFER })
+
+		newsItem.preview = this.article.slice(0,250).replace(/<.*?>/g, '').slice(0,200)
+	}
+	async deleteNews(req, res) {
+		const id = await this.parseJsonBody(req)
+		await this.server.data.deleteItem(DT.NEWS, id)
+		this.jsonResponse(res, 200, '')
+	}
 }

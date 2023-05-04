@@ -2,6 +2,41 @@ import { promises as fsP } from 'fs'
 import path from 'path'
 
 /**
+ * @typedef {Object} DataBase
+ * @property {EventData[]} events
+ * @property {NewsData[]} news
+ * @property {TagData[]} tags
+ * @property {TeamData[]} teams
+ * @property {Players[]} players
+ *
+ * @typedef {Object} EventData
+ * @property {number} id
+ * @property {string} start - YYYY-MM-DDThh:mm
+ * @property {string} end - YYYY-MM-DDThh:mm
+ * @property {number[]} tags
+ * @property {string} title
+ *
+ * @typedef {Object} NewsData
+ * @property {number} id
+ * @property {number} publication - YYYY-MM-DDThh:mm
+ * @property {number[]} tags
+ * @property {string} title
+ * @property {string} preview
+ *
+ * @typedef {Object} TagData
+ * @property {number} id
+ * @property {string} name
+ * @property {number} offX
+ * @property {number} offY
+ *
+ * @typedef {Object} TeamData
+ * @property {number} id
+ * @property {string?} name
+ * @property {number} tag
+ * @property {number[]} players
+ */
+
+/**
  * @typedef {Object} IndexType
  * @property {string} path
  * @property {string} indexField
@@ -15,25 +50,64 @@ const TYPE = {
 		path:'app/event/data',
 		indexField:'events',
 		itemFields: new Set(['id', 'start', 'end', 'tags', 'title']),
-		saveItem: async function(ad, item) {
-			const eventPath = path.join(ad.server.root, this.path, `${item.id}`)
+		/**@param {ad} */
+		saveItem: async function(ad, event) {
+			const eventPath = path.join(ad.server.root, this.path, `${event.id}`)
 			await fsP.mkdir(eventPath, {recursive:true})
-
-			const promises = []
-			if (item.banner.length)
-				promises.push(fsP.writeFile(path.join(eventPath, 'banner.webp'), item.banner))
-			if (item.preview.length)
-				promises.push(fsP.writeFile(path.join(eventPath, 'preview.webm'), item.preview))
-			return Promise.all(promises)
+			return ad.saveFiles(eventPath, [
+					['banner.webp', event.banner],
+					['preview.webp', event.preview],
+				])
 		},
 		deleteItem: function(ad, id) {
 			let eventPath = path.join(ad.server.root, this.path, `${id}`)
 			return fsP.rm(eventPath, {recursive:true, force:true})
 		},
 	},
-	NEWS: { path:'app/news/data', indexField:'news' },
+	TAG: {
+		path:'app/tag',
+		indexField:'tags',
+		itemFields: new Set(['id', 'name', 'offset']),
+		saveItem: async function(ad, tag) {
+			const tagPath = path.join(ad.server.root, this.path, `${tag.id}`)
+			await fsP.mkdir(tagPath, {recursive:true})
+			return ad.saveFiles(tagPath, [
+					['background.svg', tag.background],
+				])
+		},
+		/**@param {AdminData} ad */
+		deleteItem: function(ad, id) {
+			let eventPath = path.join(ad.server.root, this.path, `${id}`)
+
+			for (let event of ad.rawIndex.events)
+				event.tags = event.tags.filter(tag => tag !== id)
+			for (let news of ad.rawIndex.news)
+				news.tags = news.tags.filter(tag => tag !== id)
+			for (let team of ad.rawIndex.teams)
+				if (team.tag === id)
+					team.tag = null
+
+			return fsP.rm(eventPath, {recursive:true, force:true})
+		},
+	},
+	NEWS: {
+		path:'app/news/data',
+		indexField:'news',
+		itemFields: new Set(['id', 'publication', 'tags', 'title']),
+		saveItem: async function(ad, news) {
+			const newsPath = path.join(ad.server.root, this.path, `${news.id}`)
+			await fsP.mkdir(newsPath, {recursive:true})
+			return ad.saveFiles(newsPath, [
+					['banner.webp', news.banner],
+					['thumbnail.webp', news.thumbnail],
+				])
+		},
+		deleteItem: async function(ad, id) {
+			let newsPath = path.join(ad.server.root, this.path, `${id}`)
+			return fsP.rm(newsPath, {recursive:true, force:true})
+		}
+	},
 	ESPORT: { path:'app/esport/data', indexField:'teams' },
-	TAG: { path:'app/esport/data', indexField:'tags' },
 }
 
 export default class AdminData {
@@ -43,7 +117,7 @@ export default class AdminData {
 	constructor(server) {
 		this.server = server
 		this.indexPath = path.join(this.server.root, 'app/index.json')
-		this.rawIndex = {}
+		/**@type {DataBase}*/this.rawIndex = {}
 	}
 
 	async init() {
@@ -97,5 +171,18 @@ export default class AdminData {
 			.replace(/\n\t{2,}(\t|})/g, (_,g1) => g1==='\t'?'':'}')
 			.replace(/([^\\])": /g, '$1":')
 		return fsP.writeFile(this.indexPath, rawJson, {encoding:'utf8'})
+	}
+
+	/**
+	 * @param {string} directory
+	 * @param {[string,Buffer][]} files
+	 * @return {Promise} */
+	saveFiles(directory, files) {
+		let promises = []
+		for (let [ name, buffer ] of files)
+			if (buffer.length)
+				promises.push(fsP.writeFile(path.join(directory, name), buffer))
+
+		return Promise.all(promises)
 	}
 }

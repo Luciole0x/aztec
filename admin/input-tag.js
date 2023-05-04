@@ -8,7 +8,7 @@ const template = /*html*/`
 		display: inline-block;
 		height: 2em;
 		aspect-ratio: 1/1;
-		background-image: url('/app/media/icon/game.webp');
+		background-image: url('/app/tag/tag.webp');
 		background-size: 400% 400%;
 		background-position: calc(var(--offX) * 33.33%) calc(var(--offY) * 33.33%);
 		opacity: 0.4;
@@ -28,7 +28,6 @@ export default class InputTag extends HTMLElement {
 	static TAGS = []
 	static observedAttributes = ['value']
 	static formAssociated = true
-	#internals
 
 	attributeChangedCallback(name, oldValue, newValue) {
 		this.value = newValue
@@ -36,17 +35,17 @@ export default class InputTag extends HTMLElement {
 
 	constructor() {
 		super()
-		this.#internals = this.attachInternals()
+		this.internals = this.attachInternals()
 		this.attachShadow({mode:'open', delegatesFocus:true})
 		this.shadowRoot.innerHTML = `${template}${this.buildTags()}`
 		this.shadowRoot.addEventListener('click', this.dispatchAction.bind(this))
-		this.setAttribute('tabindex', 0)
+		this.setAttribute('tabindex', '0')
 	}
 
 	buildTags() {
 		return InputTag.TAGS.map(tag =>
 			/*html*/`<span class="tag" title="${tag.name}" data-id="${tag.id}"
-					style="--offX:${tag.offX};--offY:${tag.offY}">
+					style="--offX:${tag.offset[0]};--offY:${tag.offset[1]}">
 			</span>`)
 			.join('')
 	}
@@ -62,8 +61,8 @@ export default class InputTag extends HTMLElement {
 				tag.setAttribute('selected', '') :
 				tag.removeAttribute('selected')
 
-		this.#internals.setFormValue(this.value)
-		this.#internals.setValidity({})
+		this.internals.setFormValue(this.value)
+		this.internals.setValidity({})
 	}
 
 	get value() {
@@ -78,8 +77,8 @@ export default class InputTag extends HTMLElement {
 		e.target.hasAttribute('selected') ?
 			e.target.removeAttribute('selected') :
 			e.target.setAttribute('selected', '')
-		this.#internals.setFormValue(this.value)
-		this.#internals.setValidity({})
+		this.internals.setFormValue(this.value)
+		this.internals.setValidity({})
 	}
 }
 
