@@ -25,7 +25,7 @@ const EXT_TO_MIME = new Map([
 
 const P = {
 	NUMBER: v => Number(v.toString()),
-	NUMBER_ARRAY: v => v.toString().split(',').map(Number).filter(v=>!isNaN(v)),
+	NUMBER_ARRAY: v => v.toString().split(',').filter(v=>v).map(Number).filter(v=>!isNaN(v)),
 	STRING: v => v.toString(),
 	BUFFER: v => v,
 }
@@ -46,16 +46,16 @@ export default class AdminRouter {
 				news: {
 					POST: this.postNews,
 					DELETE: this.deleteNews },
-				team: {
-					POST: this.postTeam,
-					DELETE: this.deleteTeam,
+				esport: {
+					team: {
+						POST: this.postTeam,
+						DELETE: this.deleteTeam },
 					player: {
 						POST: this.postPlayer,
 						DELETE: this.deletePlayer }, },
 				cmd: {
-					'open-dir': { POST: this.openDir }
-				}
-			}
+					'open-dir': { POST: this.openDir }, },
+			},
 		}
 
 		this.route = this.route.bind(this)

@@ -53,7 +53,7 @@ export default class InputTag extends HTMLElement {
 
 	set value(newValue) {
 		if ((typeof newValue) === 'string')
-			newValue = newValue.split(',').map(Number).filter(v=>!isNaN(v))
+			newValue = newValue.split(',').map(Number).filter(v=>v)
 
 		if (this.hasAttribute('data-single'))
 			newValue.splice(1, newValue.length)

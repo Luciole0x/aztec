@@ -34,7 +34,7 @@ const template = /*html*/`
 
 export default class AdminTeam extends AdminElement {
 	constructor() {
-		super(template, 'teams', '/api/team')
+		super(template, 'teams', '/api/esport/team')
 		/**@type {TeamData[]}*/this.items
 	}
 

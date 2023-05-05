@@ -112,14 +112,14 @@ const TYPE = {
 		},
 	},
 	TEAM: {
-		path: 'app/team',
+		path: 'app/esport/team',
 		indexField: 'teams',
 		itemFields: new Set(['id', 'name', 'tag', 'players', 'coaches']),
 		saveItem: async function() {},
 		deleteItem: async function() {},
 	},
 	PLAYER: {
-		path: 'app/team/player',
+		path: 'app/esport/player',
 		indexField: 'players',
 		itemFields: new Set(['id', 'name', 'role', 'contact']),
 		saveItem: async function(ad, player) {

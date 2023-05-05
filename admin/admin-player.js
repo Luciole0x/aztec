@@ -26,7 +26,7 @@ const template = /*html*/`
 
 export default class AdminPlayer extends AdminElement {
 	constructor() {
-		super(template, 'players', '/api/team/player')
+		super(template, 'players', '/api/esport/player')
 		/**@type {PlayerData[]}*/this.items
 	}
 

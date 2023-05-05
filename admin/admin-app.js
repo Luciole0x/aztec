@@ -106,7 +106,6 @@ const template = /*html*/`
 
 		.notif-error {
 			background: #FDD;
-
 		}
 
 </style>
@@ -123,7 +122,6 @@ const template = /*html*/`
 	<slot></slot>
 </section>
 <div id="notifications"></div>`
-
 /**
  * @typedef {Object} DataBase
  * @property {EventData[]} events
