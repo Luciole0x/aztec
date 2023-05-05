@@ -1,5 +1,3 @@
-import { app } from './azt-app.js'
-
 let template = /*html*/`
 	<style>
 		:host {

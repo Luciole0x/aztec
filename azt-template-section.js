@@ -1,20 +1,21 @@
 /**
- * @typedef {Object} routeValue
- * @property {string} section - From SECTION
- * @property {string?} filter - From TAG
- * @property {string} id
- * 
+ * @typedef {import('../azt-app.js').RouteValue} RouteValue
+ * @typedef {import('../azt-app.js').AztApp} AztApp
+ */
+/**
  * @typedef {Object} template
  * @property {string} content
  * @property {Functon?} onRouteUpdate
  * @property {Functon?} onScroll
  */
 
+
 export default class AztTemplateContent extends HTMLElement {
 	/**
+	 * @param {AztApp} app
 	 * @param {routeValue} route
 	 * @param {string} tplPath */
-	static async display(route, tplPath) {
+	static async display(app, route, tplPath) {
 		/**@type {template}*/let template = (await import(tplPath)).default
 		return new AztTemplateContent(route, template)
 	}
