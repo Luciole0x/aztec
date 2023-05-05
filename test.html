@@ -22,8 +22,8 @@
 		path.push(`M${(i%30)*12+10},${Math.floor(i/30)*12+10} l-5,5 l10,0`)
 
 	template.innerHTML = /*html*/`
-		<svg id="svg-a" viewbox="0 0 1000 1000"> <path d="${path.join('z ')}"></path> </svg>
-		<svg id="svg-b" viewbox="0 0 1000 1000"> ${ path.map(p => ` <path d="${p}"></path> `) } </svg> `
+		<svg id="svg-a" viewbox="0 0 1000 1000"> <path d="${path.join('z ')}"/> </svg>
+		<svg id="svg-b" viewbox="0 0 1000 1000"> ${ path.map(p => ` <path d="${p}"/> `) } </svg> `
 	document.body.appendChild(template.content)
 
 	let svgA = document.body.querySelector('#svg-a')
