@@ -8,7 +8,7 @@ import InputTag from './input-tag.js'
 const template = /*html*/`
 <style>
 	.row, .header {
-		grid-template: auto / 112px 100px 1fr 20px;
+		grid-template: auto / 140px 100px 1fr 20px;
 	}
 
 	.tag {
@@ -22,7 +22,7 @@ const template = /*html*/`
 
 	textarea {
 		resize: vertical;
-		min-height: 6em;
+		min-height: 8em;
 	}
 
 </style>
@@ -47,7 +47,7 @@ export default class AdminNews extends AdminElement {
 	renderItem(news) {
 		return /*html*/`
 		<div class="row" data-id="${news.id}" data-action="open-edit">
-			<span> ${new Date(news.timestamp)} </span>
+			<span> ${new Date(news.publication).toISOString().slice(0,16)} </span>
 			<span> ${
 				news.tags.map(tag => /*html*/`<span class="tag"
 						style="--offX:${tag.offset[0]};--offY:${tag.offset[1]}"></span>`)
@@ -71,7 +71,7 @@ export default class AdminNews extends AdminElement {
 				<label> ID: </label>
 				<input type="number" name="id" value="${news.id}" readonly tabindex="-1">
 				<label> Publication*: </label>
-				<input type="datetime-local" name="publication" value="${news.publiation||''}" required>
+				<input type="datetime-local" name="publication" value="${news.publication||''}" required>
 				<label> Tags: </label>
 				<input-tag class="input" name="tags" value="${news.tags.map(t => t.id)}"></input-tag>
 				<label> Titre*: </label>
@@ -83,6 +83,10 @@ export default class AdminNews extends AdminElement {
 				<label> Vignette: </label>
 				<input type="file" name="thumbnail">
 				<div class="actions">
+					<svg class="dir-button" data-action="open-dir" data-dir="/app/news/${news.id}" viewbox="0 0 100 100">
+						<title>Ouvrir le dossier</title>
+						<path d="M10,15V85H90V30H55L40,15Z"></path>
+					</svg>
 					<button type="button" data-action="close-card"> Annuler </button>
 					<button type="button" data-action="post-item"> ${news.id?'Modifier':'Créer'} </button>
 				</div>

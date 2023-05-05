@@ -120,13 +120,34 @@ const baseTemplate = /*html*/`
 			gap: 8px;
 			justify-content: right;
 		}
+
 		button {
 			flex: 1 1 auto;
 			min-width: 100px;
 			max-width: 200px;
 			padding: 8px 4px;
-			font-size: 18px;
 		}
+
+		button, .dir-button {
+			font-size: 18px;
+			border: solid 1px #0008;
+			border-radius: 2px;
+			background: #EEF;
+		}
+		.dir-button {
+			flex: 0 0 auto;
+			padding: 2px 8px;
+			stroke: currentColor;
+			stroke-width: 8;
+			stroke-linejoin: round;
+			fill: none;
+			height: 34px;
+		}
+		button:hover, .dir-button:hover {
+			background: #DDD;
+			cursor: pointer;
+		}
+
 		input, .input {
 			border: solid 1px #0008;
 			border-radius: 2px;
@@ -135,12 +156,11 @@ const baseTemplate = /*html*/`
 			background: #F000;
 			transition: background 220ms;
 		}
-		input:invalid, .input:invalid {
+		:invalid {
 			border-color: #F64;
 			border-width: 2px;
 			padding: 1px;
 		}
-
 </style>`
 
 export default class AdminElement extends HTMLElement {
@@ -168,6 +188,7 @@ export default class AdminElement extends HTMLElement {
 		case 'post-item': return this.postItem(target)
 		case 'open-delete': return this.openDelete(Number(target.dataset.id))
 		case 'delete-item': return this.deleteItem(target)
+		case 'open-dir': return this.openDir(target.dataset.dir)
 		}
 	}
 
@@ -231,7 +252,7 @@ export default class AdminElement extends HTMLElement {
 			if (!res.ok) await res.json().then(err => {throw err})
 
 			this.closeCard(target)
-			document.body.notify(`Supression effectué`)
+			document.body.notify(`Supression effectué.`)
 			return this.renderItems(true)
 		} catch (err) {
 			document.body.notify(err.message||err, 'error')
@@ -246,5 +267,16 @@ export default class AdminElement extends HTMLElement {
 			target.style.opacity = 0
 			setTimeout(() => target.remove(), 200)
 		}
+	}
+
+	async openDir(dir) {
+		const res = await fetch('/api/cmd/open-dir', {
+			method: 'POST',
+			body: JSON.stringify(dir),
+			headers: {'Content-Type':'application/json'} })
+		if (!res.ok)
+			await res.json().then(err => document.body.notify(err, 'error'))
+		else
+			document.body.notify(`Ouverture en cour...`)
 	}
 }

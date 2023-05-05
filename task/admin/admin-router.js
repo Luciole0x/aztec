@@ -4,6 +4,7 @@ import querystring from 'querystring'
 import fs, { promises as fsP } from 'fs'
 import path from 'path'
 import AdminData from './admin-data.js'
+import { exec } from 'child_process'
 
 const DT = AdminData.TYPE
 
@@ -35,21 +36,26 @@ export default class AdminRouter {
 		this.server = server
 
 		this.tree = {
-			event: {
-				POST: this.postEvent,
-				DELETE: this.deleteEvent },
-			tag: {
-				POST: this.postTag,
-				DELETE: this.deleteTag },
-			news: {
-				POST: this.postNews,
-				DELETE: this.deleteNews },
-			team: {
-				POST: this.postTeam,
-				DELETE: this.deleteTeam,
-				player: {
-					POST: this.postPlayer,
-					DELETE: this.deletePlayer }, },
+			api: {
+				event: {
+					POST: this.postEvent,
+					DELETE: this.deleteEvent },
+				tag: {
+					POST: this.postTag,
+					DELETE: this.deleteTag },
+				news: {
+					POST: this.postNews,
+					DELETE: this.deleteNews },
+				team: {
+					POST: this.postTeam,
+					DELETE: this.deleteTeam,
+					player: {
+						POST: this.postPlayer,
+						DELETE: this.deletePlayer }, },
+				cmd: {
+					'open-dir': { POST: this.openDir }
+				}
+			}
 		}
 
 		this.route = this.route.bind(this)
@@ -62,7 +68,7 @@ export default class AdminRouter {
 		if (req.method === 'GET')
 			return this.getStaticFile(req, res)
 
-		let path = req.url.split('/').slice(2)
+		let path = req.url.split('/').slice(1)
 		path.push(req.method)
 		let target = this.tree
 
@@ -224,7 +230,7 @@ export default class AdminRouter {
 			article:     P.STRING,
 			banner:      P.BUFFER,
 			thumbnail:   P.BUFFER })
-		newsItem.preview = this.article.slice(0,250).replace(/<.*?>/g, '').slice(0,200)
+		newsItem.preview = newsItem.article.slice(0,250).replace(/<.*?>/g, '').slice(0,200)
 		await this.server.data.saveItem(DT.NEWS, newsItem)
 		this.jsonResponse(res, 200, '')
 	}
@@ -263,6 +269,13 @@ export default class AdminRouter {
 	async deletePlayer(req, res) {
 		const id = await this.parseJsonBody(req)
 		await this.server.data.deleteItem(DT.PLAYER, id)
+		this.jsonResponse(res, 200, '')
+	}
+
+	//GOTO:cmd
+	async openDir(req, res) {
+		const dir = await this.parseJsonBody(req)
+		exec(`start "" ${path.join(this.server.root, dir)}`)
 		this.jsonResponse(res, 200, '')
 	}
 }

@@ -33,7 +33,7 @@ import path from 'path'
  * @property {string} name
  * @property {number} tag
  * @property {number[]} players
- * @property {number[]} coatchs
+ * @property {number[]} coachs
  * 
  * @typedef {Object} PlayerData
  * @property {number} id
@@ -96,11 +96,12 @@ const TYPE = {
 	NEWS: {
 		path:'app/news',
 		indexField:'news',
-		itemFields: new Set(['id', 'publication', 'tags', 'title']),
+		itemFields: new Set(['id', 'publication', 'tags', 'title', 'preview']),
 		saveItem: async function(ad, news) {
 			const newsPath = path.join(ad.server.root, this.path, `${news.id}`)
 			await fsP.mkdir(newsPath, {recursive:true})
 			return ad.saveFiles(newsPath, [
+					['article.tpl', news.article, 'utf8'],
 					['banner.webp', news.banner],
 					['thumbnail.webp', news.thumbnail],
 				])
@@ -132,7 +133,7 @@ const TYPE = {
 		deleteItem: async function(ad, id) {
 			for (let team of ad.rawIndex.teams) {
 				team.players = team.players.filter(player => player !== id)
-				team.coaches = team.coaches.filter(player => player !== id)
+				team.coachs = team.coachs.filter(player => player !== id)
 			}
 
 			let newsPath = path.join(ad.server.root, this.path, `${id}`)
@@ -207,13 +208,13 @@ export default class AdminData {
 	/**
 	 * @param {string} directory
 	 * @param {[string,Buffer][]} files
+	 * @param {string?} encoding
 	 * @return {Promise} */
-	saveFiles(directory, files) {
+	saveFiles(directory, files, encoding) {
 		let promises = []
 		for (let [ name, buffer ] of files)
 			if (buffer.length)
-				promises.push(fsP.writeFile(path.join(directory, name), buffer))
-
+				promises.push(fsP.writeFile(path.join(directory, name), buffer, {encoding}))
 		return Promise.all(promises)
 	}
 }

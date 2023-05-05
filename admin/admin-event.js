@@ -76,6 +76,10 @@ export default class AdminEvent extends AdminElement {
 					<label> Video preview: </label>
 					<input type="file" name="preview">
 					<div class="actions">
+						<svg class="dir-button" data-action="open-dir" data-dir="/app/event/${event.id}" viewbox="0 0 100 100">
+							<title>Ouvrir le dossier</title>
+							<path d="M10,15V85H90V30H55L40,15Z"></path>
+						</svg>
 						<button type="button" data-action="close-card"> Annuler </button>
 						<button type="button" data-action="post-item"> ${event.id?'Modifier':'Créer'} </button>
 					</div>
