@@ -1,5 +1,5 @@
 import AdminElement from './admin-element.js'
-
+import InputMedia from './input-media.js'
 /**
  * @typedef {import('./admin-app.js').DataBase} DataBase
  * @typedef {import('./admin-app.js').PlayerData} PlayerData
@@ -39,7 +39,7 @@ export default class AdminPlayer extends AdminElement {
 			<span> ${player.name||''} </span>
 			<span> ${player.role||''} </span>
 			<span> ${player.contact||''} </span>
-			<span class="delete" data-id="${player.id}" data-action="open-delete"> x </span>
+			<span class="delete" data-id="${player.id}" data-action="open-delete"> × </span>
 		</div>`
 	}
 
@@ -55,9 +55,16 @@ export default class AdminPlayer extends AdminElement {
 				<input type="text" name="name" value="${player.name||''}" required>
 				<label> Rôle*: </label>
 				<input type="text" name="role" value="${player.role||''}" required>
-				<label> Contact*: </label>
+				<label> Contact: </label>
 				<input type="text" name="contact" value="${player.contact||''}">
+				<label>Picture: 128×128</label>
+				<input-media class="input" name="picture" accept=".webp"
+						data-source="/app/team/player/${player.id}/picture.webp"></input-media>
 				<div class="actions">
+					<svg class="dir-button" data-action="open-dir" data-dir="/app/team/player/${player.id}" viewbox="0 0 100 100">
+						<title>Ouvrir le dossier</title>
+						<path d="M10,15V85H90V30H55L40,15Z"/>
+					</svg>
 					<button type="button" data-action="close-card"> Annuler </button>
 					<button type="button" data-action="post-item"> ${player.id?'Modifier':'Créer'} </button>
 				</div>

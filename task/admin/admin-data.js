@@ -126,7 +126,7 @@ const TYPE = {
 			const playerPath = path.join(ad.server.root, this.path, `${player.id}`)
 			await fsP.mkdir(playerPath, {recursive:true})
 			return ad.saveFiles(playerPath, [
-					['picture.webp', news.picture],
+					['picture.webp', player.picture],
 				])
 		},
 		/**@param {AdminData}ad */

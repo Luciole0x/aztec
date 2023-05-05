@@ -1,5 +1,6 @@
 import AdminElement from './admin-element.js'
 import InputTag from './input-tag.js'
+import InputMedia from './input-media.js'
 /**
  * @typedef {import('./admin-app.js').DataBase} DataBase
  * @typedef {import('./admin-app.js').EventData} EventData
@@ -51,7 +52,7 @@ export default class AdminEvent extends AdminElement {
 					.join('')
 			} </span>
 			<span> ${event.title} </span>
-			<span class="delete" data-id="${event.id}" data-action="open-delete"> x </span>
+			<span class="delete" data-id="${event.id}" data-action="open-delete"> × </span>
 		</div> `
 	}
 
@@ -71,14 +72,16 @@ export default class AdminEvent extends AdminElement {
 					<input-tag class="input" name="tags" value="${event.tags.map(t => t.id)}"></input-tag>
 					<label> Titre*: </label>
 					<input type="text" name="title" value="${event.title||''}" maxlength="200" required>
-					<label> Bannière: </label>
-					<input type="file" name="banner">
-					<label> Video preview: </label>
-					<input type="file" name="preview">
+					<label> Bannière*: <span class="link-template" data-action="open-dir" data-dir="/app/event">(template-banner.xcf↗)</span> </label>
+					<input-media class="input" required name="banner" accept=".webp"
+							data-source="/app/event/${event.id}/banner.webp"></input-media>
+					<label> Video preview: 16/9 </label>
+					<input-media class="input" name="preview" accept=".webm"
+							data-source="/app/event/${event.id}/preview.webm"></input-media>
 					<div class="actions">
 						<svg class="dir-button" data-action="open-dir" data-dir="/app/event/${event.id}" viewbox="0 0 100 100">
 							<title>Ouvrir le dossier</title>
-							<path d="M10,15V85H90V30H55L40,15Z"></path>
+							<path d="M10,15V85H90V30H55L40,15Z"/>
 						</svg>
 						<button type="button" data-action="close-card"> Annuler </button>
 						<button type="button" data-action="post-item"> ${event.id?'Modifier':'Créer'} </button>

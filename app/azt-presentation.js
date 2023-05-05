@@ -76,9 +76,9 @@ let template = /*html*/`
 
 	</style>
 	<svg class="scroll-arrow" viewbox="0 20 100 60">
-		<path d="M10,25L50,35L90,25" style="--delay:0ms"></path>
-		<path d="M10,45L50,55L90,45" style="--delay:120ms"></path>
-		<path d="M10,65L50,75L90,65" style="--delay:240ms"></path>
+		<path d="M10,25L50,35L90,25" style="--delay:0ms"/>
+		<path d="M10,45L50,55L90,45" style="--delay:120ms"/>
+		<path d="M10,65L50,75L90,65" style="--delay:240ms"/>
 	</svg>
 	<h1>
 		Communauté ESport
@@ -89,7 +89,7 @@ let template = /*html*/`
 	</p>
 	<a class="join" href="#/">
 		<svg class="icon" viewbox="-20 -10 140 120">
-			<path d="M 36,12 C 30,13 19,16 15,19 5,34 -2,53 1,75 6,81 26,88 26,88 l 5,-9 c -6,-2 -8,-4 -8,-4 l 2,-2 c 15,8 35,8 50,0 l 2,2 c 0,0 -2,2 -8,4 l 5,9 C 74,88 94,81 99,75 102,53 95,34 85,19 81,16 70,13 64,12 l -3,6 C 51,17 48,17 39,18 Z M 33,64 a 9,10 0 1 1 0.1,0z M 67,64 a 9,10 0 1 1 0.1,0z"></path>
+			<path d="M 36,12 C 30,13 19,16 15,19 5,34 -2,53 1,75 6,81 26,88 26,88 l 5,-9 c -6,-2 -8,-4 -8,-4 l 2,-2 c 15,8 35,8 50,0 l 2,2 c 0,0 -2,2 -8,4 l 5,9 C 74,88 94,81 99,75 102,53 95,34 85,19 81,16 70,13 64,12 l -3,6 C 51,17 48,17 39,18 Z M 33,64 a 9,10 0 1 1 0.1,0z M 67,64 a 9,10 0 1 1 0.1,0z"/>
 		</svg>
 		Rejoindre Aztec
 	</a> `

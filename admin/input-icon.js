@@ -8,10 +8,6 @@ const template = /*html*/`
 
 	.tags {
 		cursor: pointer;
-		background-image: url('/app/tag/tag.webp');
-		background-size: 97% 97%;
-		background-repeat: no-repeat;
-		background-position: center;
 		aspect-ratio: 1/1;
 		max-height: 100%;
 		max-width: 100%;
@@ -23,18 +19,28 @@ const template = /*html*/`
 	}
 
 	.mask {
-		fill: #FFFB;
-		stroke-linejoin: round;
-		stroke-width: 2;
+		opacity: 0.35;
 	}
-
+	.selector {
+		stroke: var(--stroke);
+		stroke-linejoin: round;
+		stroke-width: 2.1;
+	}
 </style>
+
 <svg class="tags" viewbox="-2 -2 104 104">
-	<path class="mask" d="M-8,-8H108V108H-8Z" fill="#FFFA"></path>
-</svg>
-`
+	<defs>
+		<pattern id="icons" patternUnits="userSpaceOnUse" width="100" height="100">
+			<image xlink:href="/app/tag/tag.webp" x="0" y="0" width="100" height="100"/>
+		</pattern>
+	</defs>
+	<path class="mask" d="M0,0H100V100H0Z" fill="url(#icons)"/>
+	<path class="selector" style="--stroke:#9E9E9E" fill="url(#icons)"/>
+	<path class="selector" style="--stroke:#2196F3" fill="url(#icons)"/>
+</svg>`
 
 export default class InputIcon extends HTMLElement {
+	static GRID_SIZE = 4
 	static observedAttributes = ['value']
 	static formAssociated = true
 
@@ -45,29 +51,29 @@ export default class InputIcon extends HTMLElement {
 	constructor() {
 		super()
 		this.internals = this.attachInternals()
-		this.attachShadow({mode:'open', delegatesFocus:true})
+		this.attachShadow({mode:'open'})
 		this.shadowRoot.innerHTML = template
 		this.setAttribute('tabindex', 0)
 
-		this._value = [0,0]
-		this._hover = { x:-1, y:-1 }
-		this.path = this.shadowRoot.querySelector('.mask')
+		this._value = []
+		this._hover = { x:-2, y:-2 }
+		this.selectors = this.shadowRoot.querySelectorAll('.selector')
 
-		const svg = this.path.parentElement
-		svg.addEventListener('mousemove', this.onMouseMove.bind(this))
-		svg.addEventListener('mouseleave', this.onMouseLeave.bind(this))
-		svg.addEventListener('click', this.onClick.bind(this))
+		this.svg = this.shadowRoot.querySelector('svg')
+		this.svg.addEventListener('mousemove', this.onMouseMove.bind(this))
+		this.svg.addEventListener('mouseleave', this.onMouseLeave.bind(this))
+		this.svg.addEventListener('click', this.onClick.bind(this))
 	}
-	
+
 	set value(newValue) {
 		if ((typeof newValue) === 'string')
-			newValue = newValue.split(',').filter(v=>v).map(Number)
+			newValue = newValue.split(',').map(Number).filter(v=>!isNaN(v))
 		this._value = newValue
-		this._hover = { x:-1, y:-1 }
-		this.updatePath(this._value[0], this._value[1])
+		this._hover = { x:-2, y:-2 }
 
-		this.internals.setFormValue(this.value)
-		this.internals.setValidity({})
+		this.updateSelectors(this._value[0], this._value[1])
+
+		this.validate()
 	}
 
 	get value() {
@@ -76,41 +82,52 @@ export default class InputIcon extends HTMLElement {
 
 	onMouseMove(e) {
 		const pos = this.getCursorPos(e)
-		this.updatePath(pos.x, pos.y)
+		this.updateSelectors(pos.x, pos.y)
 	}
 	onMouseLeave(e) {
-		this.updatePath(this._value[0], this._value[1])
+		this.updateSelectors(this._value[0], this._value[1])
 	}
 	onClick(e) {
 		const pos = this.getCursorPos(e)
 		this.value = [ pos.x, pos.y ]
 	}
 
-	updatePath(x, y) {
+	updateSelectors(x, y) {
 		if (x===this._hover.x && y===this._hover.y)
 			return
+		if (isNaN(x) || isNaN(y) || x===this._value[0] && y===this._value[1]) {
+			this._hover.x = -2
+			this._hover.y = -2
+		} else {
+			this._hover.x = x
+			this._hover.y = y
+		}
 
-		this._hover.x = x
-		this._hover.y = y
-
-		if (isNaN(x) || isNaN(y))
-			return this.path.setAttribute('d', `M-8,-8H108V108H-8Z`)
-
-		let color = '#2196F3'
-		if (x===this._value[0] && y===this._value[1])
-			color = '#9E9E9E'
-
-		this.path.style.stroke = color
-		this.path.setAttribute('d', `M-8,-8H108V108H-8Z M${x*25-1},${y*25-1} v27h27v-27Z`)
+		let coef = 100 / InputIcon.GRID_SIZE
+		let s = coef + 2
+		this.selectors[0].setAttribute('d', `M${
+			(this._value[0]||0)*coef-1},${
+			(this._value[1]||0)*coef-1}v${s}h${s}v-${s}z`)
+		this.selectors[1].setAttribute('d', `M${
+			this._hover.x*coef-1},${
+			this._hover.y*coef-1}v${s}h${s}v-${s}z`)
 	}
 
 	getCursorPos(e) {
-		const { height, width } = this.path.parentElement.getBoundingClientRect()
-		let x = Math.floor((e.offsetX / width *1.04-0.02) *4)
-		let y = Math.floor((e.offsetY / height *1.04-0.02) *4)
-		x = Math.min(Math.max(0, x), 3)
-		y = Math.min(Math.max(0, y), 3)
+		const { height, width } = this.svg.getBoundingClientRect()
+		let x = Math.floor((e.offsetX / width *1.04-0.02) *InputIcon.GRID_SIZE)
+		let y = Math.floor((e.offsetY / height *1.04-0.02) *InputIcon.GRID_SIZE)
+		x = Math.min(Math.max(0, x), InputIcon.GRID_SIZE-1)
+		y = Math.min(Math.max(0, y), InputIcon.GRID_SIZE-1)
 		return {x,y}
+	}
+
+	validate() {
+		this.internals.setFormValue(this.value)
+		if (this.hasAttribute('required') && !this._value.length)
+			this.internals.setValidity({valueMissing:true}, 'Icon requis.')
+		else
+			this.internals.setValidity({})
 	}
 }
 

@@ -1,5 +1,6 @@
 import AdminElement from './admin-element.js'
 import InputTag from './input-tag.js'
+import InputMedia from './input-media.js'
 /**
  * @typedef {import('./admin-app.js').DataBase} DataBase
  * @typedef {import('./admin-app.js').NewsData} NewsData
@@ -54,7 +55,7 @@ export default class AdminNews extends AdminElement {
 					.join('')
 			} </span>
 			<span> ${news.title} </span>
-			<span class="delete" data-id="${news.id}" data-action="open-delete"> x </span>
+			<span class="delete" data-id="${news.id}" data-action="open-delete"> × </span>
 		</div>`
 	}
 
@@ -78,14 +79,16 @@ export default class AdminNews extends AdminElement {
 				<input type="text" name="title" value="${news.title||''}" maxlength="256" required>
 				<label> Article*: </label>
 				<textarea class="input" name="article" required>${article}</textarea>
-				<label> Bannière: </label>
-				<input type="file" name="banner">
-				<label> Vignette: </label>
-				<input type="file" name="thumbnail">
+				<label> Bannière: 1500×350 </label>
+				<input-media class="input" name="banner" accept=".webp"
+						data-source="/app/news/${news.id}/banner.webp"></input-media>
+				<label> Vignette: 300×220 </label>
+				<input-media class="input" name="thumbnail" accept=".webp"
+						data-source="/app/news/${news.id}/thumbnail.webp"></input-media>
 				<div class="actions">
 					<svg class="dir-button" data-action="open-dir" data-dir="/app/news/${news.id}" viewbox="0 0 100 100">
 						<title>Ouvrir le dossier</title>
-						<path d="M10,15V85H90V30H55L40,15Z"></path>
+						<path d="M10,15V85H90V30H55L40,15Z"/>
 					</svg>
 					<button type="button" data-action="close-card"> Annuler </button>
 					<button type="button" data-action="post-item"> ${news.id?'Modifier':'Créer'} </button>

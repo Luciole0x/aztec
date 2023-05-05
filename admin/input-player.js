@@ -81,7 +81,7 @@ export default class InputPlayer extends HTMLElement {
 
 	set value(newValue) {
 		if ((typeof newValue) === 'string')
-			newValue = newValue.split(',').filter(v=>v).map(Number)
+			newValue = newValue.split(',').map(Number).filter(v=>!isNaN(v))
 		this._value = newValue
 
 		this.playersNode.innerHTML = this._value

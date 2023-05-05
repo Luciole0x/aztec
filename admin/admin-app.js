@@ -19,13 +19,13 @@ const template = /*html*/`
 		top: 0;
 		z-index: 10;
 		display: block;
-		height: 32px;
 		width: 100%;
 		background: white;
 		border-bottom: solid 1px #444;
 	}
 		nav {
 			display: flex;
+			flex-wrap: wrap;
 			justify-content: center;
 		}
 			a {

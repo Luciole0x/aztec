@@ -48,7 +48,7 @@ export default class AdminTeam extends AdminElement {
 			<span> ${team.name} </span>
 			<span> ${team.players.map(player => player.name).join(' , ')} </span>
 			<span> ${team.coaches.map(coach => coach.name).join(' , ')} </span>
-			<span class="delete" data-id="${team.id}" data-action="open-delete"> x </span>
+			<span class="delete" data-id="${team.id}" data-action="open-delete"> × </span>
 		</div>`
 	}
 

@@ -37,11 +37,12 @@ const baseTemplate = /*html*/`
 			border-right: none;
 		}
 		.create {
-			color: #048;
+			font-size: 1.5em;
+			color: #04B;
 		}
 		.create:hover {
 			color: white;
-			background-color: #ACF;
+			background-color: #68F;
 			cursor: pointer;
 		}
 
@@ -70,6 +71,7 @@ const baseTemplate = /*html*/`
 				color: #A00;
 				text-align: center;
 				cursor: pointer;
+				font-size: 1.5em;
 			}
 			.delete:hover {
 				color: #FFF;
@@ -90,14 +92,14 @@ const baseTemplate = /*html*/`
 		to {opacity:1}
 	}
 
-		.card {
+		.card, form.card {
 			background: white;
 			border-radius: 4px;
 			width: 100%;
 			max-width: 600px;
 			margin: 128px auto;
 			display: grid;
-			padding: 16px;
+			padding: 16px 16px 0 16px;
 			grid-gap: 8px;
 			font-size: 18px;
 			box-sizing: border-box;
@@ -115,10 +117,13 @@ const baseTemplate = /*html*/`
 			margin: 0 0 -10px 0px;
 		}
 		.actions {
-			margin-top: 16px;
+			padding: 16px 0;
 			display: flex;
 			gap: 8px;
 			justify-content: right;
+			background: white;
+			position: sticky;
+			bottom: 0;
 		}
 
 		button {
@@ -161,6 +166,15 @@ const baseTemplate = /*html*/`
 			border-width: 2px;
 			padding: 1px;
 		}
+
+	.link-template {
+		color: #0008;
+		font-size: 0.7em;
+		cursor: pointer;
+	}
+	.link-template:hover {
+		text-decoration: underline;
+	}
 </style>`
 
 export default class AdminElement extends HTMLElement {

@@ -53,7 +53,7 @@ export default class InputTag extends HTMLElement {
 
 	set value(newValue) {
 		if ((typeof newValue) === 'string')
-			newValue = newValue.split(',').filter(v=>v).map(Number)
+			newValue = newValue.split(',').map(Number).filter(v=>!isNaN(v))
 
 		if (this.hasAttribute('data-single'))
 			newValue.splice(1, newValue.length)
@@ -83,7 +83,10 @@ export default class InputTag extends HTMLElement {
 
 	validate() {
 		this.internals.setFormValue(this._value.join())
-		this.internals.setValidity({})
+		if (this.hasAttribute('required') && !this._value.length)
+			this.internals.setValidity({valueMissing:true}, 'Média requis.')
+		else
+			this.internals.setValidity({})
 	}
 }
 
