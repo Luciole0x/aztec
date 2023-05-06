@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body {
+			display: flex;
+			gap: 8px;
+			margin: 4px;
+			overflow: hidden scroll;
+			flex-wrap: wrap;
+			padding: 0;
+			justify-content: center;
+			background: #FFF;
+		}
+
+		svg, img, object {
+			position: relative;
+			max-height: 25vh;
+			aspect-ratio: 4/3;
+			background: #FFF;
+			border: solid 2px black;
+		}
+
+		img::after, object::after {
+			top: 0;
+			left: 0;
+			position: absolute;
+			display: inline-block;
+			padding: 2px 4px;
+			border-bottom-left-radius: 4px;
+			background: black;
+			color: white;
+		}
+		img::after {
+			content: 'image';
+		}
+
+		object::after {
+			content: 'object';
+		}
+
+	</style>
+</head>
+<body>
+	<svg viewBox="0 0 80 60" id="local-svg-source" xmlns="http://www.w3.org/2000/svg">
+		<path d="M0,0H80V60H0Z" fill="#0002"></path>
+		<text x="50%" y="10" font-size="12" dominant-baseline="middle" text-anchor="middle"> Local SVG </text>
+		<defs>
+			<radialGradient id="local-radial-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+				<stop offset="0%" style="stop-color:#F00;" />
+				<stop offset="100%" style="stop-color:#00F;" />
+			</radialGradient>
+			<circle id="local-red-cirle" r="15" fill="#F00"/>
+			<circle id="local-gradient-circle" r="15" fill="url(#local-radial-gradient)"/>
+		</defs>
+		<use href="#local-red-cirle" x="20" y="35"></use>
+		<use href="#local-gradient-circle" x="60" y="35"></use>
+	</svg>
+	<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+		<text x="50%" y="2" font-size="12" dominant-baseline="hanging" text-anchor="middle"> use Local SVG </text>
+		<use href="#local-svg-source" x="0" y="15" width="40" height="30"></use>
+		<use href="#local-red-cirle" x="100" y="65" transform="scale(0.5,0.5)"></use>
+		<use href="#local-gradient-circle" x="140" y="65" transform="scale(0.5,0.5)"></use>
+	</svg>
+	<img src="file-svg-source.svg">
+	<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+		<text x="50%" y="2" font-size="12" dominant-baseline="hanging" text-anchor="middle"> use File SVG </text>
+		<use viewBox="0 0 80 60" href="file-svg-source.svg#file-svg-source" x="0" y="15" width="40" height="30"></use>
+		<use href="file-svg-source.svg#file-red-cirle" x="100" y="65" transform="scale(0.5,0.5)"></use>
+		<use href="file-svg-source.svg#file-gradient-circle" x="140" y="65" transform="scale(0.5,0.5)"></use>
+
+		<circle id="local-gradient-circle" r="7.5" fill="url(./file-svg-source.svg#file-radial-gradient)" cx="40" cy="30"/>
+	</svg>
+	<object data="file-svg-source.svg" type="image/svg+xml"></object>
+	<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+		<text x="50%" y="2" font-size="12" dominant-baseline="hanging" text-anchor="middle"> image File SVG </text>
+		<defs>
+			<filter id="displacementFilter">
+				<feTurbulence
+					type="turbulence"
+					baseFrequency="1.2"
+					numOctaves="1"
+					result="turbulence" />
+				<feDisplacementMap
+					in2="turbulence"
+					in="SourceGraphic"
+					scale="10"
+					xChannelSelector="R"
+					yChannelSelector="G" />
+			</filter>
+			<clipPath id="clip-path">
+				<use href="#clip-circle" x="50" y="50"/>
+			</clipPath>
+		</defs>
+
+		<circle id="clip-circle" cy="0" r="100" fill="#0002" filter="url(#displacementFilter)">
+			<animate attributeName="r" begin="0s" dur="3s" from="0" to="100" repeatCount="indefinite" />
+		</circle>
+
+		<image href="file-svg-source.svg" x="14" y="18" height="40" width="52" clip-path="url(#clip-path)"/>
+	</svg>
+</html>

@@ -94,7 +94,7 @@ const template = /*html*/`
 		font-weight: bold;
 		color: white;
 		padding: 0 16px;
-		font-size: 32px;
+		font-size: 40px;
 		filter: drop-shadow(1px 1px 2px black) drop-shadow(-1px -1px 1px black);
 	}
 	.time.runing {
@@ -241,7 +241,8 @@ export default class AztEventSection extends HTMLElement {
 	onEnterVideo(e) {
 		let video = e.target.firstElementChild
 		video.play()
-		video.classList.add('display')
+			.then(() => video.classList.add('display'))
+			.catch(err => {})
 	}
 	onLeaveVideo(e) {
 		let video = e.target.firstElementChild

@@ -1,0 +1,14 @@
+<svg viewBox="0 0 80 60" id="file-svg-source" xmlns="http://www.w3.org/2000/svg">
+	<path d="M0,0H80V60H0Z" fill="#0002"></path>
+	<text x="50%" y="10" font-size="12" dominant-baseline="middle" text-anchor="middle"> file SVG </text>
+	<defs>
+		<radialGradient id="file-radial-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+			<stop offset="0%" style="stop-color:#F00;" />
+			<stop offset="100%" style="stop-color:#00F;" />
+		</radialGradient>
+		<circle id="file-red-cirle" r="15" fill="#F00"/>
+		<circle id="file-gradient-circle" r="15" fill="url(#file-radial-gradient)"/>
+	</defs>
+	<use href="#file-red-cirle" x="20" y="35"></use>
+	<use href="#file-gradient-circle" x="60" y="35"></use>
+</svg>

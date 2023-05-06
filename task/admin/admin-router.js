@@ -88,14 +88,19 @@ export default class AdminRouter {
 	/**
 	 * @param {IncomingMessage} req
 	 * @param {ServerResponse} res */
-	getStaticFile(req, res) {
+	async getStaticFile(req, res) {
 		const url = req.url.split(/[?#]/)[0].split('/').slice(1).join('/')
 		let localPath = path.join(this.server.root, url)
 
 		let extName = path.extname(localPath)
 		if (extName === '') {
 			extName = '.html'
-			localPath = path.join(localPath, 'index.html')
+			const stat = await fsP.lstat( path.join(localPath, 'index.html') )
+			if (stat.isFile)
+				res.writeHead(302, { 'location': `${path.join(req.url, 'index.html')}` }).end()
+			else
+				this.jsonResponse(res, 404, 'Not Found')
+			return
 		}
 		const mime = EXT_TO_MIME.get(extName) || EXT_TO_MIME.get('default')
 

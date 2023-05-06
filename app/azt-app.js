@@ -72,7 +72,7 @@ class Router {
 	async route(e) {
 		let hash = location.hash.split('/').slice(1)
 		if (!hash[0])
-			hash[0] = AztApp.SECTION.PRESENTATION
+			hash[0] = this.app.SECTION.PRESENTATION
 
 		let oldParams = this.parameters
 		this.parameters = {
@@ -93,7 +93,6 @@ class Router {
 
 	/** @return {Promise<DocumentFragment>} */
 	async generateContent() {
-		console.log(this.sectionsComposition,this.parameters.section)
 		const sections = this.sectionsComposition[this.parameters.section]
 		const fragment = document.createDocumentFragment()
 		const promises = []
@@ -119,47 +118,74 @@ class DataCache {
 			/**@type {DataBase}*/data: { events:[], news:[], teams:[], tags:[], players:[] },
 			map: { tags:new Map(), players:new Map() },
 		}
+
+		this.fetchPromise = null
+	}
+
+	initFetchPromise() {
+		let resolve = null
+		let reject = null
+		let promise = new Promise((resolve_, reject_) => {
+			resolve = resolve_
+			reject = reject_
+		})
+		promise.resolve = resolve
+		promise.reject = reject
+		promise.pending = true
+		promise.finally(() => promise.pending = false)
+
+		return promise
 	}
 
 	/**
 	 * @param {boolean?} force
 	 * @return {Promise} */
 	async getIndexData(force=false) {
-		if (!force)
-			return this.index.data
+		if (!force && this.fetchPromise)
+			return this.fetchPromise
 
-		const updatedData = await fetch('./index.json').then(res => res.json())
-		const { data, map: { tags, players } } = this.index
+		let newFetch = this.initFetchPromise()
+		if (this.fetchPromise?.pending)
+			this.fetchPromise.resolve(newFetch)
+		this.fetchPromise = newFetch
 
-		for (let field of ['events', 'news', 'teams', 'tags', 'players'])
-			data[field].splice(0, data[field].length, ...updatedData[field])
-		data.players.sort((a,b) => a.name < b.name)
+		try {
+			const updatedData = await fetch('./index.json').then(res => res.json())
+			const { data, map: { tags, players } } = this.index
 
-		tags.clear()
-		for (let tag of data.tags)
-			tags.set(tag.id, tag)
+			for (let field of ['events', 'news', 'teams', 'tags', 'players'])
+				data[field].splice(0, data[field].length, ...updatedData[field])
+			data.players.sort((a,b) => a.name < b.name)
 
-		players.clear()
-		for (let player of data.players) {
-			players.set(player.id, player)
-			players.set(player.name, player)
-		}
+			tags.clear()
+			for (let tag of data.tags)
+				tags.set(tag.id, tag)
 
+			players.clear()
+			for (let player of data.players) {
+				players.set(player.id, player)
+				players.set(player.name, player)
+			}
 
-		for (let event of data.events)
-			for (let i=0; i<event.tags.length; i++)
-				event.tags[i] = tags.get(event.tags[i])
+			for (let event of data.events)
+				for (let i=0; i<event.tags.length; i++)
+					event.tags[i] = tags.get(event.tags[i])
 
-		for (let news of data.news)
-			for (let i=0; i<news.tags.length; i++)
-				news.tags[i] = tags.get(news.tags[i])
+			for (let news of data.news)
+				for (let i=0; i<news.tags.length; i++)
+					news.tags[i] = tags.get(news.tags[i])
 
-		for (let team of data.teams) {
-			team.tag = tags.get(team.tag)
-			for (let i=0; i<team.players.length; i++)
-				team.players[i] = players.get(team.players[i])
-			for (let i=0; i<team.coaches.length; i++)
-				team.coaches[i] = players.get(team.coaches[i])
+			for (let team of data.teams) {
+				team.tag = tags.get(team.tag)
+				for (let i=0; i<team.players.length; i++)
+					team.players[i] = players.get(team.players[i])
+				for (let i=0; i<team.coaches.length; i++)
+					team.coaches[i] = players.get(team.coaches[i])
+			}
+
+			this.fetchPromise.resolve(this.index)
+		} catch (err) {
+			this.fetchPromise.reject(err)
 		}
 	}
 }

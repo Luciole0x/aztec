@@ -31,9 +31,10 @@ export default class AdminServer {
 			.on('clientError', (err, socket) => socket.end('HTTP/1.1 400 Bad Request\r\n\r\n'))
 			.listen(this.port)
 
-		console.log(`Open app`)
-		if (this.openOnStart)
+		if (this.openOnStart) {
+			console.log(`Open app`)
 			childProcess.exec(`start http://localhost:${this.port}/admin/`)
+		}
 	}
 }
 

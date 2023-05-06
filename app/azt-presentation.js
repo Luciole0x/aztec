@@ -57,7 +57,7 @@ let template = /*html*/`
 				stroke-linejoin: round;
 				height: 120px;
 				width: 160px;
-				margin: calc(100vh - 80px - 120px) auto 0 auto;
+				margin: calc(100vh - 340px) auto 0 auto;
 				display: block;
 			}
 			.scroll-arrow > path {
@@ -104,25 +104,26 @@ export default class AztPresentation extends HTMLElement {
 		this.shadowRoot.innerHTML = template
 		this.onScroll = this.onScroll.bind(this)
 		this.scrollArrow = this.shadowRoot.querySelector('.scroll-arrow')
+		this.logo = app.background.getElementById('background-logo')
 		this.onTop = null
 	}
 
 	connectedCallback() {
-		app.background.firstElementChild.style.opacity = 1
-		app.container.addEventListener('scroll', this.onScroll, {passive:true})
+		this.logo.style.opacity = 1
+		document.body.addEventListener('scroll', this.onScroll, {passive:true})
 	}
 
 	disconnectedCallback() {
-		app.background.firstElementChild.style.opacity = null
-		app.container.removeEventListener('scroll', this.onScroll, {passive:true})
+		this.logo.style.opacity = null
+		document.body.removeEventListener('scroll', this.onScroll, {passive:true})
 	}
 
 	onScroll(e) {
-		const onTop = app.container.scrollTop < document.body.clientHeight*0.2
+		const onTop = document.body.scrollTop < document.body.clientHeight*0.2
 		if (this.onTop === onTop)
 			return
 		this.onTop = onTop
-		app.background.firstElementChild.style.opacity = (onTop ? 1 : null)
+		this.logo.style.opacity = (onTop ? 1 : null)
 		this.scrollArrow.style.opacity = (onTop ? 1 : 0)
 	}
 }

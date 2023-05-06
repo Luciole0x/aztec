@@ -31,7 +31,7 @@ const template = /*html*/`
 <svg class="tags" viewbox="-2 -2 104 104">
 	<defs>
 		<pattern id="icons" patternUnits="userSpaceOnUse" width="100" height="100">
-			<image xlink:href="/app/tag/tag.webp" x="0" y="0" width="100" height="100"/>
+			<image href="/app/tag/tag.webp" x="0" y="0" width="100" height="100"/>
 		</pattern>
 	</defs>
 	<path class="mask" d="M0,0H100V100H0Z" fill="url(#icons)"/>
