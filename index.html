@@ -4,11 +4,11 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title> Aztec </title>
-		<link rel="icon" href="favicon.svg" type="image/svg+xml">
+		<link rel="icon" href="favicon.ico">
 		<style>
 			html {
 				--primary-background: 33 101 56; /*204, 191, 122 | 80,190,110*/
-				--secondary-background: 225 195 40; /*150, 204, 122 | 234,179,67*/
+				--secondary-background: 255 215 0; /*150, 204, 122 | 234,179,67*/
 				overflow: hidden;
 			}
 
@@ -21,6 +21,7 @@
 				overflow: hidden scroll;
 				font-family: roboto, sans-serif;
 				background-color: rgb(var(--primary-background));
+				color: white;
 			}
 
 			a {
@@ -34,7 +35,7 @@
 				height: calc(100% - 80px);
 				width: 100%;
 			}
-			#background > use {
+			#background-logo {
 				opacity: 0.2;
 				transition: opacity 240ms ease-out;
 			}
@@ -46,8 +47,10 @@
 		</style>
 	</head>
 	<body>
-		<svg id="background" viewbox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
-			<use xlink:href="media/logo.svg#svg5"></use>
+		<svg id="background" viewbox="0 0 1000 1000"
+			preserveAspectRatio="xMidYMid meet"
+			xmlns="http://www.w3.org/2000/svg">
+			<image id="background-logo" href="logo.svg"/>
 		</svg>
 		<header is="azt-header" id="header"></header>
 		<section id="container"></section>

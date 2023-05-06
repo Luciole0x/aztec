@@ -1,11 +1,15 @@
+/**
+ * @typedef {import('./azt-app.js').TagData} TagData
+ * @typedef {import('./azt-app.js').AztApp} AztApp
+ */
+
 const template = /*html*/`
 <style>
 	:host {
-		position: absolute;
+		position: sticky;
 		z-index: 10;
 		top: 12px;
-		left: 24px;
-		right: calc(15px + 24px);
+		margin: 0 24px 32px 24px;
 		background-color: rgb(var(--secondary-background));
 		border-radius: 8px;
 		display: grid;
@@ -15,16 +19,12 @@ const template = /*html*/`
 
 	.logo {
 		cursor: pointer;
-		border-radius: 8px 0 0 8px;
 		justify-content: center;
 		display: grid;
 	}
-	.logo:hover {
-		background-color: rgb(var(--secondary-background));
-	}
 		.logo img {
-			height: 76px;
-			margin-top: -8px;
+			height: 110px;
+			margin-top: -13px;
 		}
 
 	nav {
@@ -44,24 +44,25 @@ const template = /*html*/`
 
 			h2 {
 				margin: 0;
-				padding: 0 16px;
-				font-size: 1.3em;
+				padding: 0 8px;
+				font-size: 1.1em;
 				display: inline-block;
 				white-space: nowrap;
 				vertical-align: middle;
 				line-height: 56px;
 			}
 			section:hover h2 {
-				background-color: rgb(var(--secondary-background));
+				background-color: #FFF4;
 			}
 			section:has(ul) h2::after {
 				content:'';
 				display: inline-block;
+				margin-left:2px;
 				height: 8px;
 				width: 8px;
 				border: solid;
 				border-width: 0 4px 4px 0;
-				border-radius: 0 0 4px 0;
+				border-radius: 0 5px 0 5px;
 				transform: translateY(-4px) rotate(45deg);
 			}
 
@@ -91,7 +92,6 @@ const template = /*html*/`
 			}
 
 				li {
-					font-size: 1.1em;
 					font-weight: bold;
 					display: block;
 					line-height: 2em;
@@ -111,7 +111,7 @@ const template = /*html*/`
 
 				.tag {
 					display: inline-block;
-					background-image: url('media/icon/game.webp');
+					background-image: url('./tag/tag.webp');
 					background-size: 400%;
 					height: 32px;
 					width: 32px;
@@ -127,25 +127,25 @@ const template = /*html*/`
 	}
 </style>
 <a href="#/presentation" class="logo">
-	<img src="media/icon/aztec.png"/>
+	<img src="logo.svg"/>
 </a>
 <nav>
 	<section>
-		<a href="#/actualite"> <h2> Actualité </h2> </a>
-		<ul>
+		<a href="#/actualite"> <h2>Actualité</h2> </a>
+		<ul class="tags-filter">
 			<li><a href="#/actualite/DIABLO"> <span class="tag" style="background-position:0 0;"></span> Diablo </a></li>
 			<li><a href="#/actualite/DOFUS"><span class="tag" style="background-position:-32px 0;"></span> Dofus </a></li>
 			<li><a href="#/actualite/CSGO"><span class="tag" style="background-position:-64px 0;"></span> Counter Strike </a></li>
 		</ul>
 	</section>
 	<section>
-		<a href="#/evenement"> <h2> événements </h2> </a>
+		<a href="#/evenement"> <h2>Événements</h2> </a>
 	</section>
 	<section>
-		<a href="#/esport"> <h2> ESport </h2> </a>
+		<a href="#/esport"> <h2>ESport</h2> </a>
 	</section>
 	<section>
-		<a href="#/reseaux"> <h2> Réseaux </h2> </a>
+		<a href="#/reseaux"> <h2>Réseaux</h2> </a>
 		<ul>
 			<li><a target="BLANK" href="#">
 				<svg class="icon" viewbox="-20 -10 140 120" style="fill:#7289DA">
@@ -164,10 +164,39 @@ const template = /*html*/`
 </nav>`
 
 export default class AztHeader extends HTMLElement {
-	constructor(test) {
+	constructor(app) {
 		super()
 		this.attachShadow({mode:'open'})
+		/**@type {AztApp}*/this.app = app
+
 		this.shadowRoot.innerHTML = template
+		this.initMenu()
+		this.shadowRoot.addEventListener('click', this.dispatchAction.bind(this))
+	}
+
+	async initMenu() {
+		/**@type {DataTag[]}*/
+		let tags = (await this.app.cache.getIndexData()).data.tags
+		this.insertTags(tags)
+	}
+
+	/** @param {DataTag[]} tags */
+	async insertTags(tags) {
+		let filter = localStorage.getItem('tags-news-filter') || ''
+		this.shadowRoot.querySelector('.tags-filter')
+			.innerHTML = tags.map(tag => /*html*/`
+				<li class="tag ${filter.includes(tag.id)?'active':''}"
+						style="--offX:${tag.offset[0]};--offY:${tag.offset[1]}">
+				</li>
+			`).join('')
+	}
+
+	async dispatchAction(e) {
+
+	}
+
+	toggleTag(target) {
+
 	}
 }
 

@@ -54,7 +54,7 @@ const template = /*html*/`
 		display: block;
 		background-position: center;
 		background-color: #DDD;
-		background-image: url(media/logo.svg);
+		background-image: url(logo.svg);
 		background-size: cover;
 		border-radius: 4px 0 0 4px;
 		overflow: hidden;
@@ -123,7 +123,7 @@ const template = /*html*/`
 
 	.picture {
 		top: 0;
-		height: 340px;
+		height: 350px;
 		border-radius: 0 0 16px 16px;
 		width: 1300px;
 		justify-self: center;
@@ -132,7 +132,6 @@ const template = /*html*/`
 		z-index: -1;
 		object-fit: none;
 		grid-area: 1/1/3/4;
-		background: #888;
 	}
 
 	.card {
