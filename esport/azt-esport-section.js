@@ -19,6 +19,22 @@
 
 let template = /*html*/`
 <style>
+	:host {
+		animation: display 120ms ease-in forwards;
+	}
+	:host(.close) {
+		animation: close 120ms ease-in forwards;
+	}
+	@keyframes close {
+		from {opacity:1;}
+		to {opacity:0;}
+	}
+	@keyframes display {
+		from { opacity:0; }
+		to { opacity:1; }
+	}
+
+
 	p {
 		margin: 64px auto;
 		padding: 16px;
@@ -52,7 +68,7 @@ let template = /*html*/`
 				margin: -37px 0 0 -16px;
 				height: 100px;
 				width: 100px;
-				background: #AAA;
+				background: #444;
 				border: solid 4px white;
 				border-radius: 50%;
 			}
@@ -135,7 +151,7 @@ let template = /*html*/`
 		}
 		.player-picture {
 			border-radius: 50%;
-			background: #aaa;
+			background: #444;
 			height: 100px;
 			width: 100px;
 			border: 4px solid white;
@@ -238,7 +254,7 @@ export default class AztEsportSection extends HTMLElement {
 			<section class="players">
 				${team.players.map(player => /*html*/`
 					<div class="player">
-						<img class="player-picture" src="/esport/player/${player.id}/picture.webp">
+						<img class="player-picture" src="./esport/player/${player.id}/picture.webp">
 						<div class="player-name">${player.name}</div>
 						<div class="player-role">${player.role}</div>
 					</div>
@@ -279,6 +295,13 @@ export default class AztEsportSection extends HTMLElement {
 		''
 		}</div>
 	</div>`
+	}
+
+	close() {
+		return new Promise((resolve, reject) => {
+			this.addEventListener('animationend', resolve, {once:true})
+			this.classList.add('close')
+		})
 	}
 }
 

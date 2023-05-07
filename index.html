@@ -7,8 +7,10 @@
 		<link rel="icon" href="favicon.ico">
 		<style>
 			html {
-				--primary-background: 33 101 56; /*204, 191, 122 | 80,190,110*/
+				--primary-background: #102d19; /*204, 191, 122 | 80,190,110*/
 				--secondary-background: 255 215 0; /*150, 204, 122 | 234,179,67*/
+				--tag-tile-coef: 33.33%;
+				--tag-bg-size: 400% 400%;
 				overflow: hidden;
 			}
 
@@ -17,11 +19,11 @@
 				margin: 0;
 				width: 100%;
 				height: 100vh;
-				font-size: 18pt;
+				font-size: 16pt;
 				overflow: hidden scroll;
 				font-family: roboto, sans-serif;
-				background-color: rgb(var(--primary-background));
-				color: white;
+				background-color: var(--primary-background);
+				color: #FFFE;
 			}
 
 			a {
@@ -33,15 +35,15 @@
 				z-index: -1;
 				top: 80px;
 				height: calc(100% - 80px);
-				width: 100%;
+				width: calc(100% - 17px);
 			}
 			#background-logo {
 				opacity: 0.2;
-				transition: opacity 240ms ease-out;
+				transition: opacity ease-out 120ms;
 			}
 
 			#container {
-				padding-top: 80px;
+				padding: 80px 0;
 			}
 
 		</style>

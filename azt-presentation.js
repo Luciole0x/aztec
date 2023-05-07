@@ -1,10 +1,7 @@
 let template = /*html*/`
 	<style>
-		:host {
-			display: contents;
-		}
-
 		h1 {
+			margin-top: 0;
 			text-align: center;
 			font-size: 2.5em;
 		}
@@ -14,7 +11,6 @@ let template = /*html*/`
 			padding: 16px;
 			max-width: 680px;
 			font-size: 1.2em;
-			text-shadow: -1px -1px 2px black, 1px 1px 2px black;
 		}
 
 		.join {
@@ -57,7 +53,7 @@ let template = /*html*/`
 				stroke-linejoin: round;
 				height: 120px;
 				width: 160px;
-				margin: calc(100vh - 340px) auto 0 auto;
+				margin: 12vh auto calc(88vh - 120px) auto;
 				display: block;
 			}
 			.scroll-arrow > path {
@@ -119,12 +115,13 @@ export default class AztPresentation extends HTMLElement {
 	}
 
 	onScroll(e) {
-		const onTop = document.body.scrollTop < document.body.clientHeight*0.2
-		if (this.onTop === onTop)
+		const opacity = Math.max(0.2, 1 - document.body.scrollTop / (document.body.clientHeight*0.8) *0.8 )
+
+		if (this.onTop === opacity)
 			return
-		this.onTop = onTop
-		this.logo.style.opacity = (onTop ? 1 : null)
-		this.scrollArrow.style.opacity = (onTop ? 1 : 0)
+		this.onTop = opacity
+		this.logo.style.opacity = opacity
+		this.scrollArrow.style.opacity = (opacity>0.4 ? 1 : 0)
 	}
 }
 
