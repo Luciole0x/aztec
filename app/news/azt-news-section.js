@@ -6,8 +6,12 @@
 
 const template = /*html*/`
 <style>
-	:host {
-		display: contents;
+	:host(.close) {
+		animation: close 120ms ease-in forwards;
+	}
+	@keyframes close {
+		from {opacity:1;}
+		to {opacity:0;}
 	}
 
 	.tag {
@@ -19,25 +23,32 @@ const template = /*html*/`
 		border-radius: 4px;
 		background-color: #DDD;
 		background-image: url('./tag/tag.webp');
-		background-size: 400%;
-		background-position: calc(var(--offX) * 33.33%) calc(var(--offY) * 33.33%);
+		background-size: var(--tag-bg-size);
+		background-position: calc(var(--offX) * var(--tag-tile-coef)) calc(var(--offY) * var(--tag-tile-coef));
 	}
 	.tag:hover {
 		filter: brightness(120%);
 	}
 
 	article.preview {
-		color: black;
 		position: relative;
 		margin: 16px auto;
 		width: 900px;
 		height: 220px;
 		max-width: 100%;
 		border-radius: 4px;
+		background: #333;
 
 		display: grid;
 		grid-template: 2em 1fr 1em / 1fr 2fr;
 		box-shadow: #00000029 0 3px 6px, #0000003B 0 3px 6px;
+		opacity: 0;
+		animation: display-preview 350ms var(--delay,0) ease-out forwards;
+	}
+	@keyframes display-preview {
+		from { opacity: 0; }
+		to { opacity: 1; }
+
 	}
 
 	.preview-tags {
@@ -47,6 +58,8 @@ const template = /*html*/`
 		z-index: 1;
 		padding: 0;
 		margin: -8px 0 0 -8px;
+		position: sticky;
+		left: 0;
 	}
 
 	.thumbnail {
@@ -72,7 +85,6 @@ const template = /*html*/`
 		grid-area: 1/2/2/4;
 		margin: 0;
 		line-height: 2em;
-		background-color: white;
 		border-radius: 0 4px 0 0;
 	}
 		.preview-title a {
@@ -90,22 +102,18 @@ const template = /*html*/`
 		grid-area: 2/2/3/4;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		background-color: white;
 	}
 
 	.preview-timestamp {
 		grid-area: 3/2/4/4;
-		color: #000A;
 		font-size: 0.7em;
 		padding-left: 8px;
-		background: white;
 		border-radius: 0 0 4px 0;
 	}
 
 
 
 	.full {
-		color: black;
 		position: fixed;
 		z-index: 2;
 
@@ -128,7 +136,6 @@ const template = /*html*/`
 		width: 1300px;
 		justify-self: center;
 		position: sticky;
-		top: 0;
 		z-index: -1;
 		object-fit: none;
 		grid-area: 1/1/3/4;
@@ -138,10 +145,9 @@ const template = /*html*/`
 		position: relative;
 		box-shadow: #00000029 0 3px 6px, #0000003B 0 3px 6px;
 		border-radius: 8px;
-		background: white;
+		background-color: #333;
 		max-width:100%;
 		width: 640px;
-		min-height: 600px;
 		margin: 0;
 		display: grid;
 		grid-template: 0 auto 1fr auto / 1fr;
@@ -155,6 +161,9 @@ const template = /*html*/`
 		padding: 0;
 	}
 	.timestamp { display:none; }
+	.content {
+		min-height: 600px;
+	}
 
 		.tags {
 			position: sticky;
@@ -162,7 +171,8 @@ const template = /*html*/`
 			margin: 0 0 0 -72px;
 			width: 48px;
 			padding: 8px;
-			top: 76px;
+			top: 120px;
+			left: 0;
 		}
 
 		.full.close {
@@ -213,6 +223,7 @@ export default class AztNewsSection extends HTMLElement {
 		this.attachShadow({mode:'open'})
 		this.setAttribute('is', 'azt-news-section')
 		this.onRouteUpdate = this.onRouteUpdate.bind(this)
+		this.onTagFilter = this.onTagFilter.bind(this)
 
 		/**@type {HTMLElement?}*/this.displayedNews = null
 		/**@type {NewsData[]}*/this.news = news
@@ -225,10 +236,12 @@ export default class AztNewsSection extends HTMLElement {
 
 	connectedCallback() {
 		document.body.addEventListener('route-update', this.onRouteUpdate)
+		app.header.addEventListener('tag-filter', this.onTagFilter)
 	}
 
 	disconnectedCallback() {
 		document.body.removeEventListener('route-update', this.onRouteUpdate)
+		app.header.removeEventListener('tag-filter', this.onTagFilter)
 	}
 
 	/**@param {CustomEvent} e*/
@@ -237,10 +250,25 @@ export default class AztNewsSection extends HTMLElement {
 		switch (this.route.section) {
 		case S.NEWS:
 		case S.ACCUEIL:
+			if (e.detail.to.filter !== e.detail.from.filter)
+				this.onTagFilter(true)
+
 			this.route.id ?
 				this.displayNews(this.route) :
 				this.closeNews()
 		}
+	}
+
+	onTagFilter(forceUpdate) {
+		if (this.route.filter && !forceUpdate)
+			return
+
+		const previews = this.shadowRoot.querySelectorAll('article.preview')
+		for (let preview of previews)
+			preview.remove()
+		this.shadowRoot.firstElementChild.insertAdjacentHTML(
+			'afterend',
+			this.renderPreviews(this.news, this.route))
 	}
 
 	/**
@@ -248,28 +276,42 @@ export default class AztNewsSection extends HTMLElement {
 	 * @param {RouteValue} route
 	 * @return {string} */
 	renderPreviews(news, route) {
-		let head = `#/${route.section}/${
+		const head = `#/${route.section}/${
 			route.filter ? `${route.filter}/` : ''}${
 			route.section===S.NEWS ? '' : '[actualite]'}`
 
-		return news.map(news => /*html*/`
-		<article class="preview" data-id="${news.id}">
-			<a class="thumbnail" href="${head}${news.id}">
-				<img src="./news/${news.id}/thumbnail.webp" loading="lazy"/>
-			</a>
-			<h3 class="preview-title">
-				<a href="${head}${news.id}"> ${news.title} </a>
-			</h3>
-			<p class="preview-text"> ${news.preview} </p>
-			<span class="preview-timestamp">${this.parsePublication(news.publication)}</span>
-			<div class="preview-tags">
-				${news.tags.map(tag =>/*html*/`<a class="tag"
-						style="--offX:${tag.offset[0]};--offY:${tag.offset[1]}"
-						href="#/${route.section}/${tag.name}"></a>`)
-					.join('')}
-			</div>
-		</article>`)
-		.join('')
+		let filter = null
+		if (route.filter) {
+			const tagTarget =  app.cache.index.data.tags.find(tag => tag.name===route.filter)
+			filter = (news) => news.tags.find(tag => tag===tagTarget)
+		} else {
+			const set = new Set(app.header.tagFilter)
+			filter = (news) => {
+				return news.tags.length === 0
+				|| news.tags.filter(tag => !set.has(tag.id)).length > 0
+			}
+		}
+
+		return news
+			.filter(v => filter(v))
+			.map((news, index) => /*html*/`
+			<article class="preview" data-id="${news.id}" style="--delay:${50*index}ms">
+				<a class="thumbnail" href="${head}${news.id}">
+					<img src="./news/${news.id}/thumbnail.webp" loading="lazy"/>
+				</a>
+				<h3 class="preview-title">
+					<a href="${head}${news.id}"> ${news.title} </a>
+				</h3>
+				<p class="preview-text"> ${news.preview} </p>
+				<span class="preview-timestamp">${this.parsePublication(news.publication)}</span>
+				<div class="preview-tags">
+					${news.tags.map(tag =>/*html*/`<a class="tag" title="${tag.name}"
+							style="--offX:${tag.offset[0]};--offY:${tag.offset[1]}"
+							href="#/${route.section}/${tag.name}"></a>`)
+						.join('')}
+				</div>
+			</article>`)
+			.join('')
 	}
 
 	/**
@@ -291,8 +333,6 @@ export default class AztNewsSection extends HTMLElement {
 			if (/(ARTICLE|IMG)/.test(e.target.nodeName))
 				window.location.hash = /#\/.*\//.exec(window.location.hash)[0]
 		})
-
-		this.shadowRoot.appendChild(this.displayedNews)
 	}
 
 	/**
@@ -305,7 +345,7 @@ export default class AztNewsSection extends HTMLElement {
 			<img class="picture" src="./news/${news.id}/banner.webp"/>
 			<div class="card">
 				<div class="tags">
-					${news.tags.map(tag =>/*html*/`<a class="tag"
+					${news.tags.map(tag =>/*html*/`<a class="tag" title="${tag.name}"
 							style="--offX:${tag.offset[0]};--offY:${tag.offset[1]}"
 							href="#/${route.section}/${tag.name}"></a>`).join('')}
 				</div>
@@ -327,7 +367,6 @@ export default class AztNewsSection extends HTMLElement {
 		return new Promise(async (resolve, reject) => {
 			if (!this.displayedNews)
 				return resolve()
-
 			this.displayedNews.addEventListener('transitionend', (e) => {
 					if (e.target === this.displayedNews) {
 						this.displayedNews.remove()
@@ -340,6 +379,10 @@ export default class AztNewsSection extends HTMLElement {
 	}
 
 	close() {
+		return new Promise((resolve, reject) => {
+			this.addEventListener('animationend', resolve, {once:true})
+			this.classList.add('close')
+		})
 	}
 }
 

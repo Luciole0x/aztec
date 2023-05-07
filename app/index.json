@@ -8,12 +8,12 @@
 		{"id":1,"start":"2023-05-02T23:40","end":"2023-05-28T23:40","tags":[3],"title":"Counter Strike"}
 	],
 	"news":[
-		{"id":3,"publication":"2023-05-05T10:31","tags":[5,4,1,2],"title":"Dernier Article","preview":"UPDATED\r\nmaybe ?"},
+		{"id":3,"publication":"2023-05-05T10:31","tags":[5,4,2],"title":"Dernier Article","preview":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacinia arcu neque, vel vehicula dui eleifend et. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; "},
 		{"id":2,"publication":"2020-01-01T00:00","tags":[],"title":"Second Article","preview":"Content updated"},
 		{"id":1,"publication":"2020-01-01T00:00","tags":[1,2,3],"title":"Premier Article","preview":"Updating \r\ncontent\r\n\r\nmultilines\r\nchanging\r\ncontent maybe who knows .\r\n\r\n\r\n###Contents"}
 	],
 	"tags":[
-		{"id":5,"name":"GREEN","offset":[2,2]},
+		{"id":5,"name":"GREEN","offset":[3,3]},
 		{"id":4,"name":"RED","offset":[2,3]},
 		{"id":3,"name":"CSGO","offset":[2,0]},
 		{"id":2,"name":"Diablo","offset":[0,0]},
@@ -25,8 +25,8 @@
 	],
 	"players":[
 		{"id":1,"name":"PlayerA","role":"Support","contact":""},
-		{"id":2,"name":"PlayerB","role":"Dps"},
-		{"id":3,"name":"PlayerC","role":"Tank"}
+		{"id":2,"name":"PlayerB","role":"Dps","contact":""},
+		{"id":3,"name":"PlayerC","role":"Tank","contact":""}
 	],
 	"coaches":[
 		{"id":1,"name":"Player","role":"Coach","contact":"bnet|player#0001,discord|player#0001"}

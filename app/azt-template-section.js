@@ -46,7 +46,7 @@ export default class AztTemplateContent extends HTMLElement {
 	}
 
 	close() {
-		return this.template.close && this.template.close()
+		return this.template.close && this.template.close(this)
 	}
 }
 

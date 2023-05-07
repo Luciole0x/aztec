@@ -1,30 +1,67 @@
 /**
  * @typedef {import('./azt-app.js').TagData} TagData
  * @typedef {import('./azt-app.js').AztApp} AztApp
+ * @typedef {import('./azt-app.js').RouteValue} RouteValue
  */
+
+import app from './azt-app.js'
 
 const template = /*html*/`
 <style>
 	:host {
+		--header-top: 16px;
+		--header-height: 50px;
+		--header-margin: 0 auto 32px auto;
+		--header-opacity: 0.8;
+		--header-color: #6D2C18; /*#144123 #5A4D12*/
+		--border-radius: 8px;
+		--font-size: 28px;
+		--max-width: 900px;
+	}
+
+	:host {
 		position: sticky;
 		z-index: 10;
-		top: 12px;
-		margin: 0 24px 32px 24px;
-		background-color: rgb(var(--secondary-background));
-		border-radius: 8px;
+		top: var(--header-top);
+		margin: var(--header-margin);
 		display: grid;
-		grid-template: 56px / 120px 1fr;
-		color: #000D;
+		max-width: var(--max-width);
+		grid-template: var(--header-height) / 120px 1fr;
+		backdrop-filter: blur(5px);
+	}
+
+	.cover {
+		position: absolute;
+		z-index: -1;
+		inset: 0;
+		background-color: var(--header-color);
+		border-radius: var(--border-radius);
+		opacity: var(--header-opacity);
 	}
 
 	.logo {
 		cursor: pointer;
 		justify-content: center;
 		display: grid;
+		border-radius: 8px 0 0 8px;
 	}
-		.logo img {
+	.logo:hover {
+		background-color: #FFF4;
+	}
+		.logo-display {
 			height: 110px;
-			margin-top: -13px;
+			width: 110px;
+			margin-top: -16px;
+			background-size: 100% 100%;
+			background-image: url(logo.svg)
+		}
+		.logo-display.logo-tag {
+			margin-top: -4px;
+			height: 64px;
+			width: 64px;
+			background-image: url('./tag/tag.webp');
+			background-size: var(--tag-bg-size);
+			background-position: calc(var(--offX) * var(--tag-tile-coef)) calc(var(--offY) * var(--tag-tile-coef));
 		}
 
 	nav {
@@ -45,25 +82,27 @@ const template = /*html*/`
 			h2 {
 				margin: 0;
 				padding: 0 8px;
-				font-size: 1.1em;
+				font-size: var(--font-size);
 				display: inline-block;
 				white-space: nowrap;
 				vertical-align: middle;
-				line-height: 56px;
+				line-height: var(--header-height);
+				font-weight: var(--font-weight);
 			}
 			section:hover h2 {
-				background-color: #FFF4;
+				background-color: #FFF2;
 			}
 			section:has(ul) h2::after {
-				content:'';
+				content: '';
 				display: inline-block;
-				margin-left:2px;
-				height: 8px;
-				width: 8px;
+				margin-left: 4px;
+				height: 6px;
+				width: 6px;
 				border: solid;
-				border-width: 0 4px 4px 0;
-				border-radius: 0 5px 0 5px;
+				border-width: 0 3px 3px 0;
+				border-radius: 0 4px 0 4px;
 				transform: translateY(-4px) rotate(45deg);
+				opacity: 0.4;
 			}
 
 			ul {
@@ -74,7 +113,7 @@ const template = /*html*/`
 				width: 250px;
 				display: block;
 				visibility: hidden;
-				background-color: rgb(var(--secondary-background));
+				background-color: var(--header-color);
 				box-shadow: #0003 0 3px 6px, #0004 0 3px 6px;
 
 				transition: visibility 0ms,
@@ -106,16 +145,34 @@ const template = /*html*/`
 					grid-gap: 4px;
 				}
 				li a:hover {
-					background-color: #fff4;
+					background-color: #FFF2;
+				}
+
+				.tags {
+					display: flex;
+					flex-wrap: wrap;
+					gap: 8px;
+					justify-content: center;
 				}
 
 				.tag {
 					display: inline-block;
 					background-image: url('./tag/tag.webp');
-					background-size: 400%;
-					height: 32px;
-					width: 32px;
+					background-size: var(--tag-bg-size);
+					background-position: calc(var(--offX) * var(--tag-tile-coef)) calc(var(--offY) * var(--tag-tile-coef));
+					height: 50px;
+					width: 50px;
+					border-radius: 4px;
+					filter: grayscale(1);
+					cursor: pointer;
 				}
+				.tag.active {
+					filter: none;
+				}
+				.tag:hover {
+					background-color: #FFF4;
+				}
+				
 				.icon {
 					height: 100%;
 				}
@@ -126,16 +183,15 @@ const template = /*html*/`
 		text-decoration: none;
 	}
 </style>
+<div class="cover"></div>
 <a href="#/presentation" class="logo">
-	<img src="logo.svg"/>
+	<div class="logo-display"> </div>
 </a>
 <nav>
 	<section>
 		<a href="#/actualite"> <h2>Actualité</h2> </a>
-		<ul class="tags-filter">
-			<li><a href="#/actualite/DIABLO"> <span class="tag" style="background-position:0 0;"></span> Diablo </a></li>
-			<li><a href="#/actualite/DOFUS"><span class="tag" style="background-position:-32px 0;"></span> Dofus </a></li>
-			<li><a href="#/actualite/CSGO"><span class="tag" style="background-position:-64px 0;"></span> Counter Strike </a></li>
+		<ul class="tags">
+		
 		</ul>
 	</section>
 	<section>
@@ -164,39 +220,66 @@ const template = /*html*/`
 </nav>`
 
 export default class AztHeader extends HTMLElement {
-	constructor(app) {
+	constructor() {
 		super()
 		this.attachShadow({mode:'open'})
-		/**@type {AztApp}*/this.app = app
-
 		this.shadowRoot.innerHTML = template
-		this.initMenu()
 		this.shadowRoot.addEventListener('click', this.dispatchAction.bind(this))
+		document.body.addEventListener('route-update', this.onRouteUpdate.bind(this))
+
+		/**@type {HTMLElement}*/this.logoDisplay = this.shadowRoot.querySelector('.logo-display')
+		this.tagFilter = (localStorage.getItem('tag-filter') || '').split(',').filter(v=>v).map(Number)
 	}
 
-	async initMenu() {
+	onRouteUpdate(e) {
+		/**@type {RouteValue}*/let route = e.detail.to
+		let tag = app.cache.index.data.tags.find(tag => tag.name===route.filter)
+		if (tag) {
+			this.logoDisplay.classList.add('logo-tag')
+			this.logoDisplay.style.setProperty('--offX', tag.offset[0])
+			this.logoDisplay.style.setProperty('--offY', tag.offset[1])
+		} else
+			this.logoDisplay.classList.remove('logo-tag')
+	}
+
+	/**@param {AztApp} app*/
+	init(app) {
 		/**@type {DataTag[]}*/
-		let tags = (await this.app.cache.getIndexData()).data.tags
-		this.insertTags(tags)
+		this.insertTags(app.cache.index.data.tags)
 	}
 
 	/** @param {DataTag[]} tags */
-	async insertTags(tags) {
-		let filter = localStorage.getItem('tags-news-filter') || ''
-		this.shadowRoot.querySelector('.tags-filter')
+	insertTags(tags) {
+		this.shadowRoot.querySelector('.tags')
 			.innerHTML = tags.map(tag => /*html*/`
-				<li class="tag ${filter.includes(tag.id)?'active':''}"
+				<li class="tag ${this.tagFilter.includes(tag.id)?'':'active'}"
+						data-action="toggle-tag" data-id="${tag.id}" title="${tag.name}"
 						style="--offX:${tag.offset[0]};--offY:${tag.offset[1]}">
 				</li>
 			`).join('')
 	}
 
 	async dispatchAction(e) {
-
+		let target = e.target.closest('[data-action]')
+		switch (target?.dataset.action) {
+		case 'toggle-tag': return this.toggleTag(target)
+		}
 	}
 
+	/**@param {HTMLElement} target*/
 	toggleTag(target) {
+		target.classList.toggle('active')
+		const tagId = parseInt(target.dataset.id)
+		const tagIsActive = target.classList.contains('active')
 
+		if (tagIsActive) {
+			let index = this.tagFilter.findIndex(id => id===tagId)
+			this.tagFilter.splice(index, 1)
+		} else
+			this.tagFilter.push(tagId)
+
+		localStorage.setItem('tag-filter', this.tagFilter)
+		this.dispatchEvent(new CustomEvent('tag-filter', {bubbles:true, detail:this.tagFilter}))
 	}
 }
 

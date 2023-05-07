@@ -12,6 +12,18 @@ export default {
 				gap: 32px;
 
 				background-attachment: fixed;
+				animation: display 120ms ease-in forwards;
+			}
+			@keyframes display {
+				from { opacity:0; }
+				to { opacity:1; }
+			}
+			:host(.close) {
+				animation: close 120ms ease-in forwards;
+			}
+			@keyframes close {
+				from {opacity:1;}
+				to {opacity:0;}
 			}
 
 			h1 {
@@ -94,7 +106,10 @@ export default {
 			</svg>
 			<span>Twitter</span>
 		</a>`,
-	onRouteUpdate: () => {
-		console.log('route update')
+	close: (node) => {
+		return new Promise((resolve, reject) => {
+			node.addEventListener('animationend', resolve, {once:true})
+			node.classList.add('close')
+		})
 	}
 }

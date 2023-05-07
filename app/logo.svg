@@ -12,24 +12,24 @@
 	<radialGradient id="LG-Neck" gradientUnits="userSpaceOnUse" cx="500" cy="358" r="265"
 			gradientTransform="scale(1,1.14)" transform-origin="500 358">
 		<stop style="stop-color:#D48C29;" offset="0.86" />
-		<stop style="stop-color:#FFd700;" offset="0.861" />
-		<stop style="stop-color:#FFd700;" offset="0.901" />
+		<stop style="stop-color:#FFD700;" offset="0.861" />
+		<stop style="stop-color:#FFD700;" offset="0.901" />
 		<stop style="stop-color:#000;" offset="0.9" />
 		<stop style="stop-color:#000;" offset="0.92" />
 		<stop style="stop-color:#D48C29;" offset="0.921" />
 		<stop style="stop-color:#D48C29;" offset="0.961" />
-		<stop style="stop-color:#FFd700;" offset="0.96" />
+		<stop style="stop-color:#FFD700;" offset="0.96" />
 	</radialGradient>
 	<radialGradient id="LG-Paw" gradientUnits="userSpaceOnUse" cx="500" cy="600" r="308"
 			gradientTransform="scale(1,0.32)" transform-origin="500 600">
 		<stop style="stop-color:#287012;" offset="0.999" />
-		<stop style="stop-color:#5dbd16;" offset="1" />
+		<stop style="stop-color:#5DBD16;" offset="1" />
 	</radialGradient>
 </defs>
 
 
-<path style="stroke:#FFD700;stroke-width:80;stroke-linejoin:round;"
-	d="m468,78-55,55C333,141 304,80 291,41 260,73 247,138 268,204l-21,63-36,-31c-53,61-54,141 3,219-42,21-63,87-23,175L114,909C260,881 340,867 500,867V110Zm64,0 55,55c80,8 109,-53 122,-92 31,32 44,97 23,163l21,63 36,-31c53,61 54,141-3,219 42,21 63,87 23,175l77,279C740,881 660,867 500,867V110Z" />
+<!--path style="stroke:#FFD700;stroke-width:80;stroke-linejoin:round;"
+	d="m468,78-55,55C333,141 304,80 291,41 260,73 247,138 268,204l-21,63-36,-31c-53,61-54,141 3,219-42,21-63,87-23,175L114,909C260,881 340,867 500,867V110Zm64,0 55,55c80,8 109,-53 122,-92 31,32 44,97 23,163l21,63 36,-31c53,61 54,141-3,219 42,21 63,87 23,175l77,279C740,881 660,867 500,867V110Z" /-->
 <path style="fill:#000;stroke:#000;stroke-width:50;stroke-linejoin:round;"
 	d="m468,78-55,55C333,141 304,80 291,41 260,73 247,138 268,204l-21,63-36,-31c-53,61-54,141 3,219-42,21-63,87-23,175L114,909C256,881 337,866 500,867V110Zm64,0 55,55c80,8 109,-53 122,-92 31,32 44,97 23,163l21,63 36,-31c53,61 54,141-3,219 42,21 63,87 23,175l77,279C744,881 663,866 500,867V110Z" />
 

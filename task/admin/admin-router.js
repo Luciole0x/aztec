@@ -94,13 +94,13 @@ export default class AdminRouter {
 
 		let extName = path.extname(localPath)
 		if (extName === '') {
-			extName = '.html'
-			const stat = await fsP.lstat( path.join(localPath, 'index.html') )
-			if (stat.isFile)
-				res.writeHead(302, { 'location': `${path.join(req.url, 'index.html')}` }).end()
-			else
-				this.jsonResponse(res, 404, 'Not Found')
-			return
+			try {
+				const stat = await fsP.lstat( path.join(localPath, 'index.html') )
+				if (stat.isFile)
+					res.writeHead(302, { 'location': `${path.join(req.url, 'index.html')}` }).end()
+				return
+			} catch(err) {}
+			return this.jsonResponse(res, 404, 'Not Found')
 		}
 		const mime = EXT_TO_MIME.get(extName) || EXT_TO_MIME.get('default')
 

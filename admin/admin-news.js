@@ -17,13 +17,13 @@ const template = /*html*/`
 		aspect-ratio: 1/1;
 		display: inline-block;
 		background-image: url('/app/tag/tag.webp');
-		background-size: 400% 400%;
-		background-position: calc(var(--offX) * 33.33%) calc(var(--offY) * 33.33%);
+		background-size: var(--tag-bg-size);
+		background-position: calc(var(--offX) * var(--tag-tile-coef)) calc(var(--offY) * var(--tag-tile-coef));
 	}
 
 	textarea {
 		resize: vertical;
-		min-height: 8em;
+		min-height: 20em;
 	}
 
 </style>
@@ -50,7 +50,7 @@ export default class AdminNews extends AdminElement {
 		<div class="row" data-id="${news.id}" data-action="open-edit">
 			<span> ${new Date(news.publication).toISOString().slice(0,16)} </span>
 			<span> ${
-				news.tags.map(tag => /*html*/`<span class="tag"
+				news.tags.map(tag => /*html*/`<span class="tag" title="${tag.name}"
 						style="--offX:${tag.offset[0]};--offY:${tag.offset[1]}"></span>`)
 					.join('')
 			} </span>

@@ -27,24 +27,33 @@ class AztApp {
 	constructor() {
 		this.SECTION = S
 		this.background = document.getElementById('background')
-		this.header = document.getElementById('header')
+		/**@type {AztHeader}*/this.header = document.getElementById('header')
 		this.container = document.getElementById('container')
-		this.activeContent = null
 
 		this.router = new Router(this)
 		this.cache = new DataCache(this)
+		this.styleManager = new StyleManager(this)
+		document.body.appendChild(this.styleManager)
 
 		this.cache.getIndexData(true)
-			.then(() => this.router.route())
+			.then(() => {
+				this.header.init(this)
+				this.router.route()
+			})
 	}
 
-	async setContent(element) {
-		let previousElement = this.activeContent
-		if (previousElement)
-			previousElement.close ? (await previousElement.close()) : this.container.innerHTML = ''
-		this.container.scrollTop = 0
-		this.container.appendChild(element)
-		this.activeContent = element
+	async setContent(fragment) {
+		document.body.scrollTo({ top:0, behavior:'smooth' })
+
+		const promises = []
+		for (let element of this.container.children)
+			promises.push(element.close ? element.close() : true)
+
+		await Promise.all(promises)
+		for (let element of [...this.container.children])
+			element.remove()
+
+		this.container.append(fragment)
 	}
 }
 
@@ -52,7 +61,7 @@ class Router {
 	/**@param {AztApp} app */
 	constructor(app) {
 		this.app = app
-		this.parameters = { section:null, filter:null, id:null }
+		this.parameters = { section:null, filter:'', id:null }
 
 		this.sectionsComposition = {
 			[S.PRESENTATION]: [ ['./azt-presentation.js'], ['./event/azt-event-section.js','runing'] ],
@@ -77,11 +86,10 @@ class Router {
 		let oldParams = this.parameters
 		this.parameters = {
 			section:hash[0],
-			filter: /^[A-Z]+$/.test(hash[1]) ? hash[1] : null,
-			id: Number(hash[2]||hash[1]||0) }
+			filter: /[\d]+$/.test(hash[1]) ? '' : hash[1],
+			id: Number(hash[2]||hash[1]||'0') }
 
-		if (oldParams.section !== this.parameters.section
-		|| oldParams.filter !== this.parameters.filter) {
+		if (oldParams.section !== this.parameters.section) {
 			let newContent = await this.generateContent()
 			await this.app.setContent(newContent)
 		}
@@ -139,7 +147,7 @@ class DataCache {
 
 	/**
 	 * @param {boolean?} force
-	 * @return {Promise} */
+	 * @return {Promise<DataBase>} */
 	async getIndexData(force=false) {
 		if (!force && this.fetchPromise)
 			return this.fetchPromise
@@ -189,6 +197,144 @@ class DataCache {
 		}
 	}
 }
+
+
+const templateStyleManager = /*html*/`
+<style>
+	:host {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		width: 400px;
+		height: 0;
+		z-index: 1000;
+		background: white;
+		color: black;
+		transition: height 350ms ease-out;
+	}
+	:host(.display) {
+		height: 350px;
+	}
+
+	.toggle-button {
+		background: white;
+		margin: calc(-2px - 1.2em) -4px 0 0;
+		border-top-left-radius: 20px;
+		float: right;
+		padding: 2px 8px;
+		cursor: pointer;
+	}
+
+	.container {
+		position: relative;
+		height: 100%;
+		width: 100%;
+		padding: 4px;
+		overflow: hidden scroll;
+		box-sizing: border-box;
+	}
+
+	section {
+		max-height: calc(1.2em - 4px);
+		display: grid;
+		grid-template-columns: 3fr 4fr;
+		overflow: hidden;
+		border-bottom: solid 1px #0008;
+		padding-bottom: 4px;
+	}
+	section.display {
+		max-height: 1200px;
+	}
+
+	h3 {
+		grid-column: 1/3;
+		margin: 0;
+		font-size: 1em;
+		cursor: pointer;
+	}
+	h3::after {
+		content: '';
+		margin-left: 4px;
+		height: 4px;
+		width: 4px;
+		display: inline-block;
+		border: solid #000;
+		transform: rotate(45deg);
+		border-width: 0 3px 3px 0;
+	}
+	section.display h3::after {
+		border-width: 3px 0 0 3px;
+	}
+
+</style>
+<div class="toggle-button" data-action="toggle"> Style Manager </div>
+<div class="container">
+	<section data-target="header" class="display">
+		<h3 data-action="toggle-section">Header</h3>
+		<span> Écart </span>
+		<input type="range" min="0" max="64" value="16" step="1"
+				data-rules="--header-top|{}px">
+		<span> Marge / </span>
+		<input type="range" min="0" max="120" value="12" step="1"
+				data-rules="--header-margin|0 {}px 32px {}px||--max-width| 100vw">
+		<span> / Largeur max</span>
+		<input type="range" min="400" max="1100" value="900" step="100"
+				data-rules="--max-width| {}px||--header-margin|0 auto 32px auto">
+		<span> Hauteur </span>
+		<input type="range" min="20" max="120" value="50" step="1"
+				data-rules="--header-height|{}px">
+
+		<span> Arrondi Coin </span>
+		<input type="range" min="0" max="40" value="8" step="1"
+				data-rules="--border-radius|{}px">
+		<span> Opacity </span>
+		<input type="range" min="0.0" max="1.0" value="0.8" step="0.01"
+				data-rules="--header-opacity|{}">
+		<span> Color </span>
+		<input type="color" value="#144123"
+				data-rules="--header-color|{}">
+	
+		<span> Font-Weight </span>
+		<input type="range" min="100" max="900" value="400" step="100"
+				data-rules="--font-weight|{}">
+		<span> Font-Size </span>
+		<input type="range" min="14" max="80" value="28" step="1"
+				data-rules="--font-size|{}px">
+
+	</section>
+</div>`
+class StyleManager extends HTMLElement {
+	constructor(app) {
+		super()
+		this.attachShadow({mode:'open'})
+		this.shadowRoot.innerHTML = templateStyleManager
+		/**@type {AztApp}*/this.app = app
+		this.shadowRoot.addEventListener('click', this.dispatchActions.bind(this))
+		this.shadowRoot.addEventListener('input', (e) => this.updateCss(e.target))
+	}
+
+	dispatchActions(e) {
+		let target = e.target.closest('[data-action]')
+		switch (target?.dataset.action) {
+		case 'toggle': return this.classList.toggle('display')
+		case 'toggle-section': return target.parentElement.classList.toggle('display')
+		}
+	}
+
+	/**@param {HTMLInputElement}node*/
+	updateCss(node) {
+		let target = node.closest('[data-target]').dataset.target
+		/**@type {CSSRule}*/let cssRule = app[target].shadowRoot.querySelector('style').sheet.rules[0]
+
+		let values = node.value.split('|')
+		node.dataset.rules
+			.split('||').map((rule, index) => {
+				const [key, tpl] = rule.split('|')
+				cssRule.styleMap.set(key, tpl.replace(/{}/g, values[index]?values[index]:values[0]))
+			})
+	}
+}
+customElements.define('style-manager', StyleManager)
 
 window.app = new AztApp()
 export default app

@@ -59,9 +59,9 @@ export default class AdminPlayer extends AdminElement {
 				<input type="text" name="contact" value="${player.contact||''}">
 				<label>Picture: 128×128</label>
 				<input-media class="input" name="picture" accept=".webp"
-						data-source="/app/team/player/${player.id}/picture.webp"></input-media>
+						data-source="/app/esport/player/${player.id}/picture.webp"></input-media>
 				<div class="actions">
-					<svg class="dir-button" data-action="open-dir" data-dir="/app/team/player/${player.id}" viewbox="0 0 100 100">
+					<svg class="dir-button" data-action="open-dir" data-dir="/app/esport/player/${player.id}" viewbox="0 0 100 100">
 						<title>Ouvrir le dossier</title>
 						<path d="M10,15V85H90V30H55L40,15Z"/>
 					</svg>

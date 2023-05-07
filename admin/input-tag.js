@@ -9,8 +9,8 @@ const template = /*html*/`
 		height: 2em;
 		aspect-ratio: 1/1;
 		background-image: url('/app/tag/tag.webp');
-		background-size: 400% 400%;
-		background-position: calc(var(--offX) * 33.33%) calc(var(--offY) * 33.33%);
+		background-size: var(--tag-bg-size);
+		background-position: calc(var(--offX) * var(--tag-tile-coef)) calc(var(--offY) * var(--tag-tile-coef));
 		opacity: 0.4;
 		filter: grayscale(1);
 		cursor: pointer;

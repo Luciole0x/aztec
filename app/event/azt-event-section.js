@@ -6,10 +6,13 @@
 
 const template = /*html*/`
 <style>
-	:host {
-		display: contents;
+	:host(.close) {
+		animation: close 120ms ease-in forwards;
 	}
-
+	@keyframes close {
+		from {opacity:1;}
+		to {opacity:0;}
+	}
 	@keyframes display {
 		from { opacity:0; }
 		to { opacity:1; }
@@ -22,7 +25,8 @@ const template = /*html*/`
 		display: grid;
 		grid-template-columns: 1fr auto 1fr;
 		align-items: center;
-		animation: display 240ms;
+		animation: display 240ms var(--delay, 0) forwards;
+		opacity: 0;
 	}
 	.section-title:before,
 	.section-title:after {
@@ -55,10 +59,11 @@ const template = /*html*/`
 		border-radius: 8px;
 		background-image: var(--bg);
 		background-size: 142.5%;
+		opacity: 0;
 		grid-template: 1fr auto 1fr 54px / 1fr 200px 1fr;
 		transition: transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
 		box-shadow: #00000029 0 3px 6px, #0000003B 0 3px 6px;
-		animation: display 240ms;
+		animation: display 240ms var(--delay, 0) forwards;
 	}
 	.preview:hover {
 		transform: scale(1.05);
@@ -91,7 +96,6 @@ const template = /*html*/`
 	.time {
 		grid-area: 2/1/3/4;
 		text-align: center;
-		font-weight: bold;
 		color: white;
 		padding: 0 16px;
 		font-size: 40px;
@@ -264,17 +268,6 @@ export default class AztEventSection extends HTMLElement {
 	}
 
 	async displayEvent(route) {
-		if (this.displayedEvent)
-			await this.closeEvent()
-		let event = await app.cache.fetchElement(S.EVENT, route.id)
-		this.shadowRoot.lastElementChild.insertAdjacentElement(
-			'afterend', this.generateEvent(event, route))
-		this.displayedEvent = this.shadowRoot.lastElementChild
-
-		this.active.addEventListener('click', (e) => {
-			if (e.target === this.active)
-				window.location.hash = `#/${route.section}`
-		})
 	}
 
 	generateEvent(event, route) {
@@ -287,40 +280,43 @@ export default class AztEventSection extends HTMLElement {
 	}
 
 	async closeEvent() {
-		
 	}
 
 	/**
-	 * @param {eventData[]} events
-	 * @param {routeValue} route
+	 * @param {EventData[]} events
+	 * @param {RouteValue} route
 	 * @param {string} timeFilter
 	 * @return {string} */
 	generatePreviews(events, route, timeFilter) {
-		let now = new Date().toISOString().slice(0,16)
-		let runing=[], coming=[], old=[]
-		for (let event of events)
+		const now = new Date().toISOString().slice(0,16)
+		const runing=[], coming=[], old=[]
+		for (const event of events)
 			(event.start > now ? coming :
 			 event.end   < now ?    old : runing)
 				.push(event)
 
-		let html = []
+		let offset = 0
+		const html = []
 		if (runing.length && (!timeFilter || timeFilter.includes('runing'))) {
 			html.push(/*html*/`<section class="events padding-top">`)
-			for (let event of runing)
-				html.push(this.generatePreview(event, route))
+			for (const event of runing)
+				html.push(this.generatePreview(event, route, offset))
 			html.push(/*html*/`</section>`)
+			offset += runing.length
 		}
 		if (coming.length && (!timeFilter || timeFilter.includes('coming'))) {
-			html.push(/*html*/`<h2 class="section-title"> Prochainement </h2><section class="events">`)
-			for (let event of coming)
-				html.push(this.generatePreview(event, route))
+			html.push(/*html*/`<h2 class="section-title" style="--delay:${offset++*50}ms"> Prochainement </h2><section class="events">`)
+			for (const event of coming)
+				html.push(this.generatePreview(event, route, offset))
 			html.push(/*html*/`</section>`)
+			offset += runing.length
 		}
 		if (old.length && (!timeFilter || timeFilter.includes('old'))) {
-			html.push(/*html*/`<h2 class="section-title"> Événements passés </h2><section class="events padding-bottom">`)
-			for (let event of old)
-				html.push(this.generatePreview(event, route))
+			html.push(/*html*/`<h2 class="section-title" style="--delay:${offset++*50}ms"> Événements passés </h2><section class="events padding-bottom">`)
+			for (const event of old)
+				html.push(this.generatePreview(event, route, offset))
 			html.push(/*html*/`</section>`)
+			offset += runing.length
 		}
 		return html.join('')
 	}
@@ -328,12 +324,13 @@ export default class AztEventSection extends HTMLElement {
 	/**
 	 * @param {eventData} event
 	 * @param {routeValue} route
+	 * @param {number} offset
 	 * @return {string}
 	 */
-	generatePreview(event, route) {
+	generatePreview(event, route, offset=0) {
 		return /*html*/`
 			<a class="preview" href="#/${S.EVENT}/${event.id}"
-					style="--bg:url('./event/${event.id}/banner.webp');">
+					style="--bg:url('./event/${event.id}/banner.webp'); --delay:${offset++*50}ms">
 				<video class="video-background" data-src="./event/${event.id}/preview.webm" loop autoplay muted></video>
 				<div class="particle pa"></div>
 				<div class="particle pb"></div>
@@ -360,6 +357,13 @@ export default class AztEventSection extends HTMLElement {
 				end.getDate()}&nbsp;${months[end.getMonth()]} </div>`
 		} else
 			return `<div class="time old"> ${months[start.getMonth()]}&nbsp;${start.getFullYear()} </div>`
+	}
+	
+	close() {
+		return new Promise((resolve, reject) => {
+			this.addEventListener('animationend', resolve, {once:true})
+			this.classList.add('close')
+		})
 	}
 }
 

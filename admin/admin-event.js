@@ -18,8 +18,8 @@ const template = /*html*/`
 		aspect-ratio: 1/1;
 		display: inline-block;
 		background-image: url('/app/tag/tag.webp');
-		background-size: 400% 400%;
-		background-position: calc(var(--offX) * 33.33%) calc(var(--offY) * 33.33%);
+		background-size: var(--tag-bg-size);
+		background-position: calc(var(--offX) * var(--tag-tile-coef)) calc(var(--offY) * var(--tag-tile-coef));
 	}
 </style>
 <div class="header">
@@ -47,7 +47,7 @@ export default class AdminEvent extends AdminElement {
 			<span> ${event.start} </span>
 			<span> ${event.end} </span>
 			<span> ${
-				event.tags.map(tag => /*html*/`<span class="tag" 
+				event.tags.map(tag => /*html*/`<span class="tag" title="${tag.name}"
 						style="--offX:${tag.offset[0]};--offY:${tag.offset[1]}"></span>`)
 					.join('')
 			} </span>
