@@ -269,19 +269,19 @@ export default class AdminApp extends HTMLBodyElement {
 		}
 	}
 
-	async commit() {
+	async commit(msg) {
 		if (this.cmdRunning)
 			return this.notify(`Une commande est déjà en cour d'exécution...`)
 		this.cmdRunning = true
 
 		try {
-			let response = await fetch('/api/cmd/commit', { method:'POST' })
-			let msg = await response.json()
+			let response = await fetch('/api/cmd/commit', { method:'POST', body:JSON.stringify(msg) })
+			let resMsg = await response.json()
 
 			if (response.ok)
-				msg && this.notify(msg)
+				resMsg && this.notify(resMsg)
 			else
-				this.notify((await response.json())||'Erreur survenue lors de la publication.', 'error')
+				this.notify(resMsg||'Erreur survenue lors de la publication.', 'error')
 
 		} catch (err) {
 			this.notify(err.message||err, 'error')
@@ -302,7 +302,7 @@ export default class AdminApp extends HTMLBodyElement {
 			if (response.ok)
 				msg && this.notify(msg)
 			else
-				this.notify((await response.json())||'Erreur survenue lors de la publication.', 'error')
+				this.notify(msg||'Erreur survenue lors de la publication.', 'error')
 
 		} catch (err) {
 			this.notify(err.message||err, 'error')
@@ -317,8 +317,6 @@ export default class AdminApp extends HTMLBodyElement {
 		this.cmdRunning = true
 
 		try {
-			
-
 
 		} catch (err) {
 			this.notify(err.message||err, 'error')

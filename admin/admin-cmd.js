@@ -48,7 +48,7 @@ const template = /*html*/`
 
 </style>
 <div class="action" data-action="publish"> Publier </div>
-<div class="action" data-action="commit"> GIT: Commit </div>
+<div class="action" data-action="commit" data-arg="CMD: Commit"> GIT: Commit </div>
 <div class="action" data-action="pull"> GIT: Pull --force </div>`
 
 export default class AdminCmd extends HTMLElement {
@@ -64,7 +64,7 @@ export default class AdminCmd extends HTMLElement {
 		const target = e.target.closest('[data-action]')
 		if (target) {
 			target.classList.add('processing')
-			await document.body[target.dataset.action]()
+			await document.body[target.dataset.action](target.dataset.arg)
 			target.classList.remove('processing')
 		}
 	}

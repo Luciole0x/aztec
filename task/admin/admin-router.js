@@ -56,7 +56,8 @@ export default class AdminRouter {
 				cmd: {
 					'open-dir': { POST: this.cmdOpenDir },
 					'commit': { POST: this.cmdCommit },
-					'publish': { POST: this.cmdPublish } },
+					'publish': { POST: this.cmdPublish },
+					'pull-force': { POST: this.cmdPullForce } },
 			},
 		}
 
@@ -285,13 +286,19 @@ export default class AdminRouter {
 		this.jsonResponse(res, 200, '')
 	}
 
-	async cmdCommit() {
-		let msg = await this.server.pullAndCommit()
+	async cmdCommit(req, res) {
+		const body = await this.parseJsonBody(req)
+		let msg = await this.server.pullAndCommit(body)
 		this.jsonResponse(res, 200, msg||'')
 	}
 
-	async publish() {
+	async cmdPublish(req, res) {
 		await this.server.publish()
 		this.jsonResponse(res, 200, `Publication effectué.`)
+	}
+
+	async cmdPullForce(req, res) {
+		await this.server.pullForce()
+		this.jsonResponse(res, 200, `"git pull --force" effectué.`)
 	}
 }
