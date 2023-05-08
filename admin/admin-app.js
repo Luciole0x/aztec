@@ -111,10 +111,42 @@ const template = /*html*/`
 			background: #FDD;
 		}
 
+	.process {
+		display: inline-block;
+		background-clip: padding-box;
+		vertical-align: middle;
+		height: 14px;
+		width: 14px;
+		margin-bottom: 4px;
+		background-color: #888;
+		border-radius: 50%;
+		border: solid 4px;
+		border-color: #0000;
+	}
+	.process.running {
+		border-color: #0008 #0008 #0000 #0000;
+		animation: loop 900ms cubic-bezier(0.50, 0.65, 0.50, 0.35) infinite;
+	}
+	.process.succeed {
+		background-color: #55bf40;
+	}
+	.process.waiting {
+		background-color: #55bf40;
+	}
+	.process.failed {
+		background-color: #bf4040;
+	}
+	@keyframes loop {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
+	}
+
 </style>
 <header>
 	<nav>
-		<a href="#/admin-cmd" class="cmd"> CMD </a>
+		<a href="#/admin-cmd" class="cmd">
+			<span class="process"></span>
+			CMD </a>
 		<a href="#/admin-tag"> Tag </a>
 		<a href="#/admin-event"> Événement </a>
 		<a href="#/admin-news"> Actualite </a>
@@ -175,7 +207,7 @@ export default class AdminApp extends HTMLBodyElement {
 		this.shadowRoot.innerHTML = template
 
 		this.displayedLink = null
-		this.cmdRunning = false
+		this.processNode = this.shadowRoot.querySelector('.process')
 		this.notifications = this.shadowRoot.getElementById('notifications')
 		window.addEventListener('hashchange', this.onHashChange.bind(this))
 		this.shadowRoot.addEventListener('animationend', this.onAnimationEnd.bind(this))
@@ -189,6 +221,7 @@ export default class AdminApp extends HTMLBodyElement {
 			players: InputPlayer.PLAYERS_MAP,
 		}
 
+		this.resetProcessNode()
 		this.getIndexData(true)
 			.then(() => this.onHashChange())
 	}
@@ -269,60 +302,57 @@ export default class AdminApp extends HTMLBodyElement {
 		}
 	}
 
-	async commit(msg) {
-		if (this.cmdRunning)
-			return this.notify(`Une commande est déjà en cour d'exécution...`)
-		this.cmdRunning = true
-
-		try {
-			let response = await fetch('/api/cmd/commit', { method:'POST', body:JSON.stringify(msg) })
-			let resMsg = await response.json()
-
-			if (response.ok)
-				resMsg && this.notify(resMsg)
-			else
-				this.notify(resMsg||'Erreur survenue lors de la publication.', 'error')
-
-		} catch (err) {
-			this.notify(err.message||err, 'error')
-		} finally {
-			this.cmdRunning = false
-		}
+	commit(msg) {
+		return this.runCmd('/api/cmd/commit', JSON.stringify(msg))
 	}
 
-	async publish() {
-		if (this.cmdRunning)
+	publish() {
+		return this.runCmd('/api/cmd/publish')
+	}
+
+	pull() {
+		return this.runCmd('/api/cmd/pull-force')
+	}
+
+	async runCmd(url, body) {
+		let pN = this.processNode.classList
+		if (pN.contains('running'))
 			return this.notify(`Une commande est déjà en cour d'exécution...`)
-		this.cmdRunning = true
+		pN.add('running')
 
 		try {
-			const response = await fetch('/api/cmd/publish', { method:'POST' })
+			const response = await fetch(url, { body, method:'POST' })
 			const msg = await response.json()
 
-			if (response.ok)
+			if (response.ok) {
+				pN.add('succeed')
 				msg && this.notify(msg)
-			else
-				this.notify(msg||'Erreur survenue lors de la publication.', 'error')
+			} else {
+				pN.add('failed')
+				this.notify(msg||'Erreur survenue', 'error')
+			}
 
 		} catch (err) {
+			pN.add('failed')
 			this.notify(err.message||err, 'error')
 		} finally {
-			this.cmdRunning = false
+			pN.remove('running')
+			setTimeout(() => this.resetProcessNode(), 3000)
 		}
 	}
 
-	async pull() {
-		if (this.cmdRunning)
-			return this.notify(`Une commande est déjà en cour d'exécution...`)
-		this.cmdRunning = true
+	async resetProcessNode() {
+		const cl = this.processNode.classList
+		if (cl.contains('running'))
+			return
 
-		try {
+		cl.remove('succeed', 'failed')
+		let publish = await fetch('/next-publish.txt').then(r => r.text())
+		this.processNode.setAttribute('title', publish)
 
-		} catch (err) {
-			this.notify(err.message||err, 'error')
-		} finally {
-			this.cmdRunning = false
-		}
+		publish.length > 10 ?
+			cl.add('waiting') :
+			cl.remove('waiting')
 	}
 }
 
