@@ -78,8 +78,12 @@ export default class AdminServer {
 
 	async publish() {
 		let publishPath = path.join(this.root, 'next-publish.txt')
+		await this.execP("git subtree push --prefix app origin gh-pages")
 		await fsP.writeFile(publishPath, '', {encoding:'utf8', flag:'w'})
-		return this.execP("git push origin `git subtree split --prefix app origin main`:gh-pages --force")
+		return this.pullAndCommit('Publish')
+
+		// git push origin `git subtree push --prefix app origin`:gh-pages --force
+		// git push origin `git subtree split --prefix app origin`:gh-pages --force
 	}
 
 	async pullForce() {

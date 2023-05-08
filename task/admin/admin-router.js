@@ -287,14 +287,9 @@ export default class AdminRouter {
 	}
 
 	async cmdCommit(req, res) {
-		console.log(typeof req, typeof res)
-
 		const body = await this.parseJsonBody(req)
-		console.log('body', body)
 		let msg = await this.server.pullAndCommit(body)
-		console.log('msg', msg)
 		this.jsonResponse(res, 200, msg||'')
-		console.log('end')
 	}
 
 	async cmdPublish(req, res) {
