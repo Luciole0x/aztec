@@ -82,7 +82,7 @@ export default class AdminServer {
 		if (publishQueue.length < 10)
 			return `Aucune modification à publier.`
 
-		await this.message('Publish\n')
+		await this.message('Publish\n', true)
 		await this.commit()
 		await this.execP("git subtree push --prefix app origin gh-pages")
 		

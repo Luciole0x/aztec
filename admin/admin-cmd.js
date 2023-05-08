@@ -47,9 +47,12 @@ const template = /*html*/`
 	}
 
 </style>
-<div class="action" data-action="publish"> Publier </div>
-<div class="action" data-action="commit" data-arg="CMD: Commit"> GIT: Commit </div>
-<div class="action" data-action="pull"> GIT: Pull --force </div>`
+<div class="action" data-action="publish"
+		title="Rendre les modifications Public"> Publier </div>
+<div class="action" data-action="commit" data-arg="CMD: Commit"
+		title="Envoyer les modifications au serveur."> GIT: Commit </div>
+<div class="action" data-action="pull"
+		title="Récupére de force les modifications depuis le serveur."> GIT: Pull --force </div>`
 
 export default class AdminCmd extends HTMLElement {
 	constructor() {
