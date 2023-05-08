@@ -71,7 +71,7 @@ export default class AdminTag extends AdminElement {
 					<input type="text" name="name" value="${tag.name||''}" maxlength="200" required>
 					<label> Icon*: <span class="link-template" data-action="open-dir" data-dir="/app/tag">(tag.webp↗)</span> </label>
 					<input-icon class="input" name="offset" value="${tag.offset}" required></input-icon>
-					<label> Background: 1280x720</label>
+					<label> Background: 1280×720</label>
 					<input-media class="input" name="background" accept=".webp" data-source="/app/tag/${tag.id}/background.webp"></input-media>
 					<div class="actions">
 						<button type="button" data-action="close-card"> Annuler </button>

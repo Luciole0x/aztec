@@ -2,7 +2,8 @@
 
 import path from 'path'
 import http from 'http'
-import childProcess from 'child_process'
+import { execSync, exec } from 'child_process'
+import { promises as fsP } from 'fs'
 import AdminRouter from './admin/admin-router.js'
 import AdminData from './admin/admin-data.js'
 
@@ -23,6 +24,14 @@ export default class AdminServer {
 
 	async init() {
 		console.log(`node ${process.version}, écoute sur le port ${this.port}.`)
+
+		console.log('git pull...')
+		execSync('git pull')
+
+		this.execP('git add --all')
+			.then(msg => console.log('then:', msg))
+			.catch(msg => console.log('catch:', msg))
+
 		console.log(`load data...`)
 		await this.data.init()
 
@@ -33,11 +42,50 @@ export default class AdminServer {
 
 		if (this.openOnStart) {
 			console.log(`Open app`)
-			childProcess.exec(`start http://localhost:${this.port}/admin/`)
+			exec(`start http://localhost:${this.port}/admin/`)
 		}
+	}
+
+	execP(cmd) {
+		return new Promise((resolve, reject) => {
+			exec(cmd, (err, stdout, stderr) => {
+				if (err)
+					reject(stderr)
+				else
+					resolve(stdout)
+			})
+		})
+	}
+
+	async pullAndCommit(msg) {
+		let publishPath = path.join(this.root, 'next-publish.txt')
+
+		try {
+			await this.execP("git pull")
+			await this.execP("git add --all")
+			await this.execP(`git commit -m "${msg}"`)
+				.catch(err => {throw `Aucune modification`})
+			await fsP.writeFile(publishPath, `\n${msg}`, {encoding:'utf8', flag:'a'})
+			await this.execP("git push --force")
+			return ''
+
+		} catch (err) {
+			if (err === 'Aucune modification')
+				return err
+			throw err
+		}
+	}
+
+	async publish() {
+		let publishPath = path.join(this.root, 'next-publish.txt')
+		await fsP.writeFile(publishPath, '', {encoding:'utf8', flag:'w'})
+		return this.execP("git push origin `git subtree split --prefix app origin main`:gh-pages --force")
+	}
+
+	async pullForce() {
+		return this.execP("git pull --force")
 	}
 }
 
 const server = new AdminServer(process.argv[2], process.argv[3])
 server.init()
-

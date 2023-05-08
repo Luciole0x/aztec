@@ -54,7 +54,9 @@ export default class AdminRouter {
 						POST: this.postPlayer,
 						DELETE: this.deletePlayer }, },
 				cmd: {
-					'open-dir': { POST: this.openDir }, },
+					'open-dir': { POST: this.cmdOpenDir },
+					'commit': { POST: this.cmdCommit },
+					'publish': { POST: this.cmdPublish } },
 			},
 		}
 
@@ -277,18 +279,19 @@ export default class AdminRouter {
 		this.jsonResponse(res, 200, '')
 	}
 
-	//GOTO:cmd
-	async openDir(req, res) {
+	async cmdOpenDir(req, res) {
 		const dir = await this.parseJsonBody(req)
 		exec(`start "" ${path.join(this.server.root, dir)}`)
 		this.jsonResponse(res, 200, '')
 	}
 
-	async publish(req, res) {
-		exec(`git subtree push --prefix app origin gh-pages`)
+	async cmdCommit() {
+		let msg = await this.server.pullAndCommit()
+		this.jsonResponse(res, 200, msg||'')
 	}
 
-	async fetchAndCommit(req, res) {
-		
+	async publish() {
+		await this.server.publish()
+		this.jsonResponse(res, 200, `Publication effectué.`)
 	}
 }

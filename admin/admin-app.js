@@ -48,6 +48,9 @@ const template = /*html*/`
 				background: #0008;
 			}
 
+			.cmd {
+			}
+
 	#notifications {
 		position: fixed;
 		bottom: 24px;
@@ -111,6 +114,7 @@ const template = /*html*/`
 </style>
 <header>
 	<nav>
+		<a href="#/admin-cmd" class="cmd"> CMD </a>
 		<a href="#/admin-tag"> Tag </a>
 		<a href="#/admin-event"> Événement </a>
 		<a href="#/admin-news"> Actualite </a>
@@ -171,6 +175,7 @@ export default class AdminApp extends HTMLBodyElement {
 		this.shadowRoot.innerHTML = template
 
 		this.displayedLink = null
+		this.cmdRunning = false
 		this.notifications = this.shadowRoot.getElementById('notifications')
 		window.addEventListener('hashchange', this.onHashChange.bind(this))
 		this.shadowRoot.addEventListener('animationend', this.onAnimationEnd.bind(this))
@@ -261,6 +266,64 @@ export default class AdminApp extends HTMLBodyElement {
 		switch (e.animationName) {
 		case 'notif-timer': e.target.classList.add('notif-hide'); break
 		case 'notif-hide': e.target.remove()
+		}
+	}
+
+	async commit() {
+		if (this.cmdRunning)
+			return this.notify(`Une commande est déjà en cour d'exécution...`)
+		this.cmdRunning = true
+
+		try {
+			let response = await fetch('/api/cmd/commit', { method:'POST' })
+			let msg = await response.json()
+
+			if (response.ok)
+				msg && this.notify(msg)
+			else
+				this.notify((await response.json())||'Erreur survenue lors de la publication.', 'error')
+
+		} catch (err) {
+			this.notify(err.message||err, 'error')
+		} finally {
+			this.cmdRunning = false
+		}
+	}
+
+	async publish() {
+		if (this.cmdRunning)
+			return this.notify(`Une commande est déjà en cour d'exécution...`)
+		this.cmdRunning = true
+
+		try {
+			const response = await fetch('/api/cmd/publish', { method:'POST' })
+			const msg = await response.json()
+
+			if (response.ok)
+				msg && this.notify(msg)
+			else
+				this.notify((await response.json())||'Erreur survenue lors de la publication.', 'error')
+
+		} catch (err) {
+			this.notify(err.message||err, 'error')
+		} finally {
+			this.cmdRunning = false
+		}
+	}
+
+	async pull() {
+		if (this.cmdRunning)
+			return this.notify(`Une commande est déjà en cour d'exécution...`)
+		this.cmdRunning = true
+
+		try {
+			
+
+
+		} catch (err) {
+			this.notify(err.message||err, 'error')
+		} finally {
+			this.cmdRunning = false
 		}
 	}
 }
