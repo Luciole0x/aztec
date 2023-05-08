@@ -28,10 +28,6 @@ export default class AdminServer {
 		console.log('git pull...')
 		execSync('git pull')
 
-		this.execP('git add --all')
-			.then(msg => console.log('then:', msg))
-			.catch(msg => console.log('catch:', msg))
-
 		console.log(`load data...`)
 		await this.data.init()
 
@@ -40,6 +36,7 @@ export default class AdminServer {
 			.on('clientError', (err, socket) => socket.end('HTTP/1.1 400 Bad Request\r\n\r\n'))
 			.listen(this.port)
 
+		console.log(`App running`)
 		if (this.openOnStart) {
 			console.log(`Open app`)
 			exec(`start http://localhost:${this.port}/admin/`)
@@ -62,7 +59,7 @@ export default class AdminServer {
 
 		try {
 			await this.execP("git pull")
-			await fsP.writeFile(publishPath, `\n${msg}`, {encoding:'utf8', flag:'a'})
+			await fsP.writeFile(publishPath, `${msg}\n`, {encoding:'utf8', flag:'a'})
 			await this.execP("git add --all")
 			await this.execP(`git commit -m "${msg}"`)
 				.catch(err => {throw `Aucune modification`})
