@@ -48,6 +48,7 @@ const template = /*html*/`
 	.events.padding-bottom { padding-bottom: 128px; }
 
 	.preview {
+		color: inherit;
 		flex: 0 0 580px;
 		position: relative;
 		display: grid;
@@ -96,12 +97,12 @@ const template = /*html*/`
 	.time {
 		grid-area: 2/1/3/4;
 		text-align: center;
-		color: white;
 		padding: 0 16px;
 		font-size: 40px;
 		filter: drop-shadow(1px 1px 2px black) drop-shadow(-1px -1px 1px black);
 	}
 	.time.runing {
+		font-weight: bold;
 		background-image: linear-gradient(40deg, rgb(234,179,67) 40%, rgb(255,240,220) 50%, rgb(234,179,67) 60%);
 		background-size: 200%;
 		-webkit-background-clip: text;
@@ -305,14 +306,14 @@ export default class AztEventSection extends HTMLElement {
 			offset += runing.length
 		}
 		if (coming.length && (!timeFilter || timeFilter.includes('coming'))) {
-			html.push(/*html*/`<h2 class="section-title" style="--delay:${offset++*50}ms"> Prochainement </h2><section class="events">`)
+			html.push(/*html*/`<h2 class="section-title" style="--delay:${offset++*40}ms"> Prochainement </h2><section class="events">`)
 			for (const event of coming)
 				html.push(this.generatePreview(event, route, offset))
 			html.push(/*html*/`</section>`)
 			offset += runing.length
 		}
 		if (old.length && (!timeFilter || timeFilter.includes('old'))) {
-			html.push(/*html*/`<h2 class="section-title" style="--delay:${offset++*50}ms"> Événements passés </h2><section class="events padding-bottom">`)
+			html.push(/*html*/`<h2 class="section-title" style="--delay:${offset++*40}ms"> Événements passés </h2><section class="events padding-bottom">`)
 			for (const event of old)
 				html.push(this.generatePreview(event, route, offset))
 			html.push(/*html*/`</section>`)
@@ -330,7 +331,7 @@ export default class AztEventSection extends HTMLElement {
 	generatePreview(event, route, offset=0) {
 		return /*html*/`
 			<a class="preview" href="#/${S.EVENT}/${event.id}"
-					style="--bg:url('./event/${event.id}/banner.webp'); --delay:${offset++*50}ms">
+					style="--bg:url('./event/${event.id}/banner.webp'); --delay:${offset++*40}ms">
 				<video class="video-background" data-src="./event/${event.id}/preview.webm" loop autoplay muted></video>
 				<div class="particle pa"></div>
 				<div class="particle pb"></div>

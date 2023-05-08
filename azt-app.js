@@ -291,7 +291,7 @@ const templateStyleManager = /*html*/`
 		<input type="range" min="0.0" max="1.0" value="0.8" step="0.01"
 				data-rules="--header-opacity|{}">
 		<span> Color </span>
-		<input type="color" value="#144123"
+		<input type="color" value="#87351C"
 				data-rules="--header-color|{}">
 	
 		<span> Font-Weight </span>

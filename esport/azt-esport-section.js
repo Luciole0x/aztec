@@ -26,8 +26,8 @@ let template = /*html*/`
 		animation: close 120ms ease-in forwards;
 	}
 	@keyframes close {
-		from {opacity:1;}
-		to {opacity:0;}
+		from { opacity:1; }
+		to { opacity:0; }
 	}
 	@keyframes display {
 		from { opacity:0; }
@@ -62,14 +62,14 @@ let template = /*html*/`
 			display: grid;
 			grid-template: 48px 1fr / 48px 1fr;
 			text-align: center;
-			background: white;
+			background: #444;
 		}
 			.coach-picture {
 				margin: -37px 0 0 -16px;
 				height: 100px;
 				width: 100px;
-				background: #444;
-				border: solid 4px white;
+				background: #222;
+				border: solid 4px #444;
 				border-radius: 50%;
 			}
 			.coach-pseudo {
@@ -142,24 +142,22 @@ let template = /*html*/`
 		.player {
 			width: 300px;
 			border-radius: 4px;
-			background: white;
+			background: #444;
 			margin: 22px 0 22px 22px;
-			color: black;
 			display: grid;
 			grid-template: 36px 28px / 64px 1fr;
 			align-items: center;
 		}
 		.player-picture {
 			border-radius: 50%;
-			background: #444;
+			background: #222;
 			height: 100px;
 			width: 100px;
-			border: 4px solid white;
+			border: 4px solid #444;
 			margin: -22px 0 -22px -22px;
 			grid-area: 1/1/3/2;
 		}
 		.player-name {
-			color: black;
 			text-align: center;
 			padding-left: 16px;
 			font-size: 28px;
