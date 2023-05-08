@@ -10,7 +10,7 @@ const template = /*html*/`
 <style>
 	:host {
 		--header-top: 16px;
-		--header-height: 50px;
+		--header-height: 64px;
 		--header-margin: 0 auto 32px auto;
 		--header-opacity: 0.8;
 		--header-color: #87351C; /*#6D2C18 #144123 #5A4D12*/
