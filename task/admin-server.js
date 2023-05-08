@@ -54,9 +54,9 @@ export default class AdminServer {
 		})
 	}
 
-	message(msg) {
+	message(msg, clear) {
 		let publishPath = path.join(this.root, 'next-publish.txt')
-		return fsP.writeFile(publishPath, `${msg}\n`, {encoding:'utf8', flag:'a'})
+		return fsP.writeFile(publishPath, `${msg}\n`, {encoding:'utf8', flag:clear?'w':'a'})
 	}
 
 	async commit() {
@@ -78,9 +78,14 @@ export default class AdminServer {
 
 	async publish() {
 		let publishPath = path.join(this.root, 'next-publish.txt')
-		await this.execP("git subtree push --prefix app origin gh-pages")
-		await fsP.writeFile(publishPath, 'Publish', {encoding:'utf8', flag:'w'})
+		let publishQueue = await fsP.readFile(publishPath, {encoding:'utf8'})
+		if (publishQueue.length < 10)
+			return `Aucune modification à publier.`
+
+		await this.message('Publish\n')
 		await this.commit()
+		await this.execP("git subtree push --prefix app origin gh-pages")
+		
 		return `Publish effectué.`
 
 		// git push origin `git subtree push --prefix app origin`:gh-pages --force

@@ -299,12 +299,12 @@ export default class AdminRouter {
 	}
 
 	async cmdPublish(req, res) {
-		await this.server.publish()
-		this.jsonResponse(res, 200, `Publication effectué.`)
+		let msg = await this.server.publish()
+		this.jsonResponse(res, 200, msg||'')
 	}
 
 	async cmdPullForce(req, res) {
-		await this.server.pullForce()
-		this.jsonResponse(res, 200, `"git pull --force" effectué.`)
+		let msg = await this.server.pullForce()
+		this.jsonResponse(res, 200, msg||'')
 	}
 }
