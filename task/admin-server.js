@@ -62,10 +62,10 @@ export default class AdminServer {
 
 		try {
 			await this.execP("git pull")
+			await fsP.writeFile(publishPath, `\n${msg}`, {encoding:'utf8', flag:'a'})
 			await this.execP("git add --all")
 			await this.execP(`git commit -m "${msg}"`)
 				.catch(err => {throw `Aucune modification`})
-			await fsP.writeFile(publishPath, `\n${msg}`, {encoding:'utf8', flag:'a'})
 			await this.execP("git push --force")
 			return ''
 

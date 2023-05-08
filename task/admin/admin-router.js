@@ -55,8 +55,8 @@ export default class AdminRouter {
 						DELETE: this.deletePlayer }, },
 				cmd: {
 					'open-dir': { POST: this.cmdOpenDir },
-					'commit': { POST: this.cmdCommit },
-					'publish': { POST: this.cmdPublish },
+					commit: { POST: this.cmdCommit },
+					publish: { POST: this.cmdPublish },
 					'pull-force': { POST: this.cmdPullForce } },
 			},
 		}
