@@ -233,7 +233,7 @@ export default class AdminElement extends HTMLElement {
 			const name = formData.get('name') || formData.get('title') || ''
 			const id = formData.get('id') || 0
 			document.body.notify(`Modification de ${name}(ID:${id}) effectué.`)
-			document.body.commit(`Update: ${name.slice(0,40)}(ID:${id})`)
+			document.body.message(`Update: ${this.itemType} ${name.slice(0,40)}(ID:${id})`)
 			return this.renderItems(true)
 
 		} catch (err) {
@@ -270,7 +270,7 @@ export default class AdminElement extends HTMLElement {
 
 			this.closeCard(target)
 			document.body.notify(`Supression effectué.`)
-			document.body.commit(`Delete: ${this.itemType}-${id}`)
+			document.body.message(`Delete: ${this.itemType}-${id}`)
 			return this.renderItems(true)
 		} catch (err) {
 			document.body.notify(err.message||err, 'error')

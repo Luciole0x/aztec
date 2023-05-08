@@ -54,17 +54,20 @@ export default class AdminServer {
 		})
 	}
 
-	async pullAndCommit(msg) {
+	message(msg) {
+		let publishPath = path.join(this.root, 'next-publish.txt')
+		return fsP.writeFile(publishPath, `${msg}\n`, {encoding:'utf8', flag:'a'})
+	}
+
+	async commit() {
 		let publishPath = path.join(this.root, 'next-publish.txt')
 
 		try {
-			await this.execP("git pull")
-			await fsP.writeFile(publishPath, `${msg}\n`, {encoding:'utf8', flag:'a'})
 			await this.execP("git add --all")
-			await this.execP(`git commit -m "${msg}"`)
+			await this.execP(`git commit -F "${publishPath}"`)
 				.catch(err => {throw `Aucune modification`})
-			await this.execP("git push --force")
-			return ''
+			await this.execP("git push")
+			return 'Commit effectué.'
 
 		} catch (err) {
 			if (err === 'Aucune modification')
@@ -76,15 +79,17 @@ export default class AdminServer {
 	async publish() {
 		let publishPath = path.join(this.root, 'next-publish.txt')
 		await this.execP("git subtree push --prefix app origin gh-pages")
-		await fsP.writeFile(publishPath, '', {encoding:'utf8', flag:'w'})
-		return this.pullAndCommit('Publish')
+		await fsP.writeFile(publishPath, 'Publish', {encoding:'utf8', flag:'w'})
+		await this.commit()
+		return `Publish effectué.`
 
 		// git push origin `git subtree push --prefix app origin`:gh-pages --force
 		// git push origin `git subtree split --prefix app origin`:gh-pages --force
 	}
 
 	async pullForce() {
-		return this.execP("git pull --force")
+		await this.execP("git pull --force")
+		return '"git pull --force" effectué'
 	}
 }
 

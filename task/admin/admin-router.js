@@ -55,6 +55,7 @@ export default class AdminRouter {
 						DELETE: this.deletePlayer }, },
 				cmd: {
 					'open-dir': { POST: this.cmdOpenDir },
+					message: { POST: this.cmdMessage },
 					commit: { POST: this.cmdCommit },
 					publish: { POST: this.cmdPublish },
 					'pull-force': { POST: this.cmdPullForce } },
@@ -286,9 +287,14 @@ export default class AdminRouter {
 		this.jsonResponse(res, 200, '')
 	}
 
-	async cmdCommit(req, res) {
+	async cmdMessage(req, res) {
 		const body = await this.parseJsonBody(req)
-		let msg = await this.server.pullAndCommit(body)
+		let msg = await this.server.message(body)
+		this.jsonResponse(res, 200, msg||'')
+	}
+
+	async cmdCommit(req, res) {
+		let msg = await this.server.commit()
 		this.jsonResponse(res, 200, msg||'')
 	}
 

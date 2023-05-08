@@ -1,6 +1,6 @@
 {
 	"events":[
-		{"id":6,"start":"2023-05-18T11:14","end":"2023-05-24T11:14","tags":[],"title":"Création"},
+		{"id":6,"start":"2023-05-18T11:14","end":"2023-05-24T11:14","tags":[1],"title":"Création"},
 		{"id":5,"start":"2022-05-02T23:40","end":"2022-05-28T23:40","tags":[3,2,1],"title":"OldEvent"},
 		{"id":4,"start":"2023-10-02T23:40","end":"2023-12-02T23:40","tags":[5,4,3,1],"title":"Active UPDATE"},
 		{"id":3,"start":"2023-01-02T23:40","end":"2023-03-28T23:40","tags":[1],"title":"ParchoMancia"},
@@ -8,9 +8,9 @@
 		{"id":1,"start":"2023-05-02T23:40","end":"2023-05-28T23:40","tags":[3],"title":"Counter Strike"}
 	],
 	"news":[
-		{"id":3,"publication":"2023-05-05T10:31","tags":[5,4,2],"title":"Dernier Article","preview":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacinia arcu neque, vel vehicula dui eleifend et. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; "},
-		{"id":2,"publication":"2020-01-15T00:00","tags":[5],"title":"Second Article","preview":"Content updated,\r\ntest cmd commit...\r\n"},
-		{"id":1,"publication":"2020-01-01T00:00","tags":[1,2,3],"title":"Premier Article","preview":"Updating \r\ncontent\r\n\r\nmultilines\r\nchanging\r\ncontent maybe who knows .\r\n\r\n\r\n###Contents"}
+		{"id":3,"publication":"2023-05-08T10:31","tags":[5,4,2],"title":"Dernier Article","preview":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacinia arcu neque, vel vehicula dui eleifend et. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; "},
+		{"id":2,"publication":"2020-01-15T00:00","tags":[4],"title":"Second Article","preview":"Content updated,\r\ntest cmd commit...\r\nUpdate TAG...\r\n"},
+		{"id":1,"publication":"2020-05-01T00:00","tags":[1,2,3],"title":"Premier Article","preview":"Updating \r\ncontent\r\n\r\nmultilines\r\nchanging\r\ncontent maybe who knows .\r\n\r\n\r\n###Contents"}
 	],
 	"tags":[
 		{"id":5,"name":"GREEN","offset":[3,3]},

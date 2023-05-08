@@ -127,10 +127,10 @@ const template = /*html*/`
 		border-color: #0008 #0008 #0000 #0000;
 		animation: loop 900ms cubic-bezier(0.50, 0.65, 0.50, 0.35) infinite;
 	}
-	.process.succeed {
-		background-color: #55bf40;
-	}
 	.process.waiting {
+		background-color: #ec9913;
+	}
+	.process.succeed {
 		background-color: #55bf40;
 	}
 	.process.failed {
@@ -301,9 +301,13 @@ export default class AdminApp extends HTMLBodyElement {
 		case 'notif-hide': e.target.remove()
 		}
 	}
+	
+	message(msg) {
+		return this.runCmd('/api/cmd/message', JSON.stringify(msg))
+	}
 
-	commit(msg) {
-		return this.runCmd('/api/cmd/commit', JSON.stringify(msg))
+	commit() {
+		return this.runCmd('/api/cmd/commit')
 	}
 
 	publish() {
@@ -337,7 +341,7 @@ export default class AdminApp extends HTMLBodyElement {
 			this.notify(err.message||err, 'error')
 		} finally {
 			pN.remove('running')
-			setTimeout(() => this.resetProcessNode(), 3000)
+			setTimeout(() => this.resetProcessNode(), 800)
 		}
 	}
 
