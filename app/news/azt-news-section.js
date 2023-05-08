@@ -102,6 +102,7 @@ const template = /*html*/`
 		grid-area: 2/2/3/4;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		font-weight: 300;
 	}
 
 	.preview-timestamp {
@@ -123,7 +124,7 @@ const template = /*html*/`
 		width: 100vw;
 		height: 100vh;
 		overflow: hidden scroll;
-		background: #000A;
+		background: #0008;
 		display: grid;
 		grid-template: 240px 80px auto 64px
 			/ minmax(0,1fr) 640px minmax(0,1fr);
@@ -163,6 +164,7 @@ const template = /*html*/`
 	.timestamp { display:none; }
 	.content {
 		min-height: 600px;
+		font-weight: 300;
 	}
 
 		.tags {
@@ -295,7 +297,7 @@ export default class AztNewsSection extends HTMLElement {
 		return news
 			.filter(v => filter(v))
 			.map((news, index) => /*html*/`
-			<article class="preview" data-id="${news.id}" style="--delay:${50*index}ms">
+			<article class="preview" data-id="${news.id}" style="--delay:${40*index}ms">
 				<a class="thumbnail" href="${head}${news.id}">
 					<img src="./news/${news.id}/thumbnail.webp" loading="lazy"/>
 				</a>

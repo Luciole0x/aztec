@@ -283,4 +283,12 @@ export default class AdminRouter {
 		exec(`start "" ${path.join(this.server.root, dir)}`)
 		this.jsonResponse(res, 200, '')
 	}
+
+	async publish(req, res) {
+		exec(`git subtree push --prefix app origin gh-pages`)
+	}
+
+	async fetchAndCommit(req, res) {
+		
+	}
 }

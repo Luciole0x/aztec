@@ -13,9 +13,10 @@ const template = /*html*/`
 		--header-height: 50px;
 		--header-margin: 0 auto 32px auto;
 		--header-opacity: 0.8;
-		--header-color: #6D2C18; /*#144123 #5A4D12*/
+		--header-color: #87351C; /*#6D2C18 #144123 #5A4D12*/
 		--border-radius: 8px;
 		--font-size: 28px;
+		--font-weight: 600;
 		--max-width: 900px;
 	}
 
@@ -131,7 +132,6 @@ const template = /*html*/`
 			}
 
 				li {
-					font-weight: bold;
 					display: block;
 					line-height: 2em;
 				}

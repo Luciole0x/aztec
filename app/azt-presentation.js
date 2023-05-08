@@ -23,7 +23,6 @@ let template = /*html*/`
 			text-decoration: none;
 			font-weight: bold;
 			margin: 20vh auto;
-			color: white;
 			font-size: 38px;
 			background: #7289DA;
 			border-radius: 8px;
@@ -31,6 +30,7 @@ let template = /*html*/`
 			transition: box-shadow 180ms ease-out;
 			grid-template: 1fr / auto 1fr;
 			align-items: center;
+			color: inherit;
 		}
 		.join:hover {
 			box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
