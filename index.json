@@ -14,7 +14,7 @@
 	],
 	"tags":[
 		{"id":5,"name":"GREEN-UPDATE","offset":[3,3]},
-		{"id":4,"name":"RED","offset":[2,3]},
+		{"id":4,"name":"RED-UPDATE","offset":[2,3]},
 		{"id":3,"name":"CSGO","offset":[2,0]},
 		{"id":2,"name":"Diablo","offset":[0,0]},
 		{"id":1,"name":"Dofus","offset":[1,0]}
