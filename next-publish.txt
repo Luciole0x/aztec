@@ -1,6 +1,2 @@
 Publish
-Update: events ParchoMancia(ID:3)
-Update: events ParchoMancia(ID:3)
-Update: events ParchoMancia(ID:3)
-Update: events ParchoMancia(ID:3)
-Update: events ParchoMancia(ID:3)
+
