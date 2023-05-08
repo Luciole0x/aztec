@@ -13,7 +13,7 @@
 		{"id":1,"publication":"2020-01-01T00:00","tags":[1,2,3],"title":"Premier Article","preview":"Updating \r\ncontent\r\n\r\nmultilines\r\nchanging\r\ncontent maybe who knows .\r\n\r\n\r\n###Contents"}
 	],
 	"tags":[
-		{"id":5,"name":"GREEN-UPDATE","offset":[3,3]},
+		{"id":5,"name":"GREEN","offset":[3,3]},
 		{"id":4,"name":"RED-UPDATE","offset":[2,3]},
 		{"id":3,"name":"CSGO","offset":[2,0]},
 		{"id":2,"name":"Diablo","offset":[0,0]},
