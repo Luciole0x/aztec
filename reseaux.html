@@ -13,10 +13,16 @@
 				flex-wrap: wrap;
 				justify-content: center;
 				gap: 32px;
-				overflow: hidden scroll;
 
 				background-attachment: fixed;
 				color: white;
+				align-content: center;
+				min-height: calc(100vh - 192px);
+			}
+
+			a {
+				color: inherit;
+				text-decoration: none;
 			}
 
 			.background {
@@ -91,15 +97,13 @@
 	</head>
 	<body>
 		<div class="background"></div>
-		<h1> Nos Réseaux </h1>
-
 		<a class="card" style="--bg:#7289DA" href="#/">
 			<svg class="icon" viewbox="-20 -10 140 120">
 				<path d="M 36,12 C 30,13 19,16 15,19 5,34 -2,53 1,75 6,81 26,88 26,88 l 5,-9 c -6,-2 -8,-4 -8,-4 l 2,-2 c 15,8 35,8 50,0 l 2,2 c 0,0 -2,2 -8,4 l 5,9 C 74,88 94,81 99,75 102,53 95,34 85,19 81,16 70,13 64,12 l -3,6 C 51,17 48,17 39,18 Z M 33,64 a 9,10 0 1 1 0.1,0z M 67,64 a 9,10 0 1 1 0.1,0z"/>
 			</svg>
 			<span>Discord</span>
 		</a>
-		<a class="card" style="--bg:#F01010" href="#/">
+		<a class="card" style="--bg:#E02020" href="#/">
 			<svg class="icon" viewbox="-10 -10 120 120">
 				<path d="m 50,15 c 49,0 50,1 50,35 0,34 -1,35 -50,35 C 1,85 0,84 0,50 0,16 1,15 50,15 Z M 40,35 V 65 L 66,50 Z"/>
 			</svg>
