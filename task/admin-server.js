@@ -39,7 +39,7 @@ export default class AdminServer {
 		console.log(`App running`)
 		if (this.openOnStart) {
 			console.log(`Open app`)
-			exec(`start http://localhost:${this.port}/admin/`)
+			exec(`start http://localhost:${this.port}/app/`)
 		}
 	}
 
