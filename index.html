@@ -126,6 +126,10 @@
 			margin-bottom: 100vh;
 		}
 
+		p {
+			padding: 0 4px;
+		}
+
 		h1 {
 			font-size: 2em;
 			font-weight: bold;
@@ -210,29 +214,6 @@
 					fill: #FFF;
 				}
 
-		.join {
-			display: grid;
-			position: relative;
-			text-align: center;
-			align-items: center;
-			margin: 64px auto;
-			width: 420px;
-			cursor: pointer;
-			aspect-ratio: 4/1;
-			max-width: 100%;
-			font-size: 38px;
-			border-radius: 8px;
-			font-size: 2.2em;
-			font-weight: bold;
-			background-color: #ffd700;
-			color: #000E;
-			transition: transform 180ms ease-out;
-		}
-		.join:hover {
-			transform: scale(1.12);
-		}
-
-
 		.roster {
 			margin: 0 16px;
 			transform: skewX(-9deg);
@@ -272,30 +253,31 @@
 					.player-picture-container {
 						overflow: hidden;
 						opacity: 0.7;
+						transition: opacity ease-out 180ms 180ms;
+					}
+					.player:hover > .player-picture-container {
+						opacity: 1;
 					}
 					.player-picture {
 						height: 100%;
 						width: 140%;
 						margin-left: -20%;
 						transform: skewX(8.5deg);
-						background-color: #000;
+						background-color: #000A;
 						background-image: var(--bg);
-						background-size: 230% 200%;
-						background-position: 48% 21%;
+						background-size: auto 100%;
+						background-position: 62% 0%;
 						display: grid;
 						align-items: center;
 					}
 						.player-info {
+							margin-top: 30%;
 							font-size: min(2vw, 1.2em);
 							padding: 4px 20%;
 							background: #000A;
 							opacity: 0;
 							transition: opacity ease-out 240ms;
 						}
-
-					.player:hover > .player-picture-container {
-						opacity: 1;
-					}
 					.player:hover .player-info {
 						opacity: 1;
 					}
@@ -359,6 +341,141 @@
 				font-family: monospace;
 			}
 
+
+
+			.preview {
+				color: inherit;
+				margin: 64px auto 0 auto;
+				position: relative;
+				display: grid;
+				text-decoration: none;
+				aspect-ratio: 16/9;
+				cursor: pointer;
+				max-width: 520px;
+				border-radius: 8px;
+				background-image: var(--bg);
+				background-size: 142.5%;
+				grid-template: 1fr auto 1fr 54px / 1fr 200px 1fr;
+				transition: transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
+				box-shadow: #00000029 0 3px 6px, #0000003B 0 3px 6px;
+				animation: display 240ms var(--delay, 0) forwards;
+			}
+			.preview:hover {
+				transform: scale(1.05);
+				z-index: 1;
+			}
+			.video-background {
+				grid-area:1/1/5/4;
+				border-radius: 8px;
+				transition: opacity 180ms ease-in;
+				opacity: 0;
+				height: 100%;
+				width: 100%;
+			}
+			.preview:hover .video-background {
+				transition: opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+				opacity: 1;
+			}
+			.title {
+				grid-area:4/2/5/3;
+				transition: transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+				width: 200px;
+				height: 70px;
+				object-fit: none;
+				object-position: -480px -200px;
+			}
+			.preview:hover > .title {
+				transform: translateY(-16px) scale(1.15);
+			}
+
+			.time {
+				grid-area: 2/1/3/4;
+				text-align: center;
+				padding: 0 16px;
+				font-size: 2.4em;
+				filter: drop-shadow(1px 1px 2px black) drop-shadow(-1px -1px 1px black);
+				
+				font-weight: bold;
+				background-image: linear-gradient(40deg, rgb(234,179,67) 40%, rgb(255,240,220) 50%, rgb(234,179,67) 60%);
+				background-size: 200%;
+				-webkit-background-clip: text;
+				background-clip: text;
+				-webkit-text-fill-color: transparent;
+				animation: swip 3s linear infinite;
+			}
+			@keyframes swip {
+				from { background-position: 160% 50%; }
+				to { background-position: -60% 50%; }
+			}
+
+
+			.particle {
+				position: absolute;
+				height: 100px;
+				width: 100px;
+				transition: transform 280ms linear;
+				pointer-events: none;
+				transform-origin: center;
+				transition-delay: 0ms;
+			}
+			.particle::after {
+				content: '';
+				opacity: 0;
+				display: block;
+				height: 100px;
+				width: 100px;
+				background: var(--bg);
+				transform: scale(0.3);
+				transition: transform 280ms cubic-bezier(0.5, 1.4, 0.95, 1),
+					opacity 100ms ease-out;
+				transition-delay: 0ms;
+			}
+			.preview:hover .particle::after {
+				opacity: 1;
+			}
+			.pa::after,
+			.pd::after {
+				transition: transform 280ms cubic-bezier(0.5, 2.0, 0.9, 1),
+					opacity 100ms ease-out;
+			}
+			.pa { bottom:-20px; left:80px; }
+			.pa::after { background-position: -480px 0px; }
+			.preview:hover .pa { 
+				transform: translateX(-140px);
+				transition-delay: 100ms;
+			}
+			.preview:hover .pa::after {
+				transform: translateY(-100px) rotate(-10deg) scale(1);
+				transition-delay: 100ms;
+			}
+			.pb { top:100px; right:50%; transform:rotate(15deg); }
+			.pb::after { background-position: -480px -100px; }
+			.preview:hover .pb {
+				transform: translateX(-40px) rotate(-15deg);
+				transition-delay: 40ms;
+			}
+			.preview:hover .pb::after {
+				transform: translateY(-160px) rotate(-10deg) scale(1);
+				transition-delay: 40ms;
+			}
+			.pc { top:100px; left:50%; transform:rotate(-15deg); }
+			.pc::after { background-position: -580px 0px; }
+			.preview:hover .pc {
+				transform: translateX(40px) rotate(15deg);
+				transition-delay: 80ms;
+			}
+			.preview:hover .pc::after {
+				transform: translateY(-160px) rotate(10deg) scale(1);
+				transition-delay: 80ms;
+			}
+			.pd { bottom:-20px; right:80px; }
+			.pd::after { background-position: -580px -100px; }
+			.preview:hover .pd { transform: translateX(140px); }
+			.preview:hover .pd::after {
+				transform: translateY(-100px) rotate(10deg) scale(1);
+			}
+
+
 	</style>
 </head>
 <body>
@@ -383,7 +500,7 @@
 			<div class="players">
 				<div class="player" data-action="display-player" data-id="0">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)">
+						<div class="player-picture" style="--bg:url(./players/PA.png)">
 							<div class="player-info">
 								<span class="bold">Pseudo:</span> Player A <br>
 								<span class="bold">Role:</span> Piou Piou <br>
@@ -395,7 +512,7 @@
 				</div>
 				<div class="player" data-action="display-player" data-id="1">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)">
+						<div class="player-picture" style="--bg:url(./players/PA.png)">
 							<div class="player-info">
 								<span class="bold">Pseudo:</span> Player B <br>
 								<span class="bold">Role:</span> Piou Piou <br>
@@ -407,7 +524,7 @@
 				</div>
 				<div class="player" data-action="display-player" data-id="2">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)">
+						<div class="player-picture" style="--bg:url(./players/PA.png)">
 							<div class="player-info">
 								<span class="bold">Pseudo:</span> Player C <br>
 								<span class="bold">Role:</span> Piou Piou <br>
@@ -419,7 +536,7 @@
 				</div>
 				<div class="player" data-action="display-player" data-id="3">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)">
+						<div class="player-picture" style="--bg:url(./players/PA.png)">
 							<div class="player-info">
 								<span class="bold">Pseudo:</span> Player D <br>
 								<span class="bold">Role:</span> Piou Piou <br>
@@ -431,7 +548,7 @@
 				</div>
 				<div class="player" data-action="display-player" data-id="4">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)">
+						<div class="player-picture" style="--bg:url(./players/PA.png)">
 							<div class="player-info">
 								<span class="bold">Pseudo:</span> Player D <br>
 								<span class="bold">Role:</span> Piou Piou <br>
@@ -530,7 +647,15 @@
 			</a>
 		</div>
 
-		<a class="join"> Rejoindre Aztec </a>
+		<a class="preview" href="#" style="--bg:url('./join-banner.webp');">
+			<video class="video-background" loop autoplay muted></video>
+			<div class="particle pa"></div>
+			<div class="particle pb"></div>
+			<div class="particle pc"></div>
+			<div class="particle pd"></div>
+			<img class="title" src="./join-banner.webp" width=""/>
+			<p class="time"> Rejoindre Aztec </p>
+		</a>
 
 	</section>
 	<section id="a-propos">
