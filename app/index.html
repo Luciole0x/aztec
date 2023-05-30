@@ -22,6 +22,9 @@
 			overflow: hidden scroll;
 			font-family: Calibri, roboto, sans-serif;
 			background-color: #12300c;
+			background-image: url(background.webp);
+			background-size: cover;
+			background-position: center;
 			color: #FFFE;
 		}
 
@@ -37,7 +40,7 @@
 		#background {
 			position: absolute;
 			transition: opacity ease-out 240ms;
-			opacity: 0.35;
+			opacity: 0;
 			z-index: -1;
 			top: 65px;
 			height: calc(100% - 65px);
@@ -102,7 +105,7 @@
 		}
 		#equipe {
 			max-width: 1400px;
-			min-height: calc(100vh - 73px);
+			padding: 128px 0;
 			display: grid;
 			grid-template: 100% / 100%;
 			align-items: center;
@@ -242,17 +245,6 @@
 				text-align: center;
 				font-weight: bold;
 			}
-			.roster-info {
-				background: black;
-				margin-top: 8px;
-				min-height: calc(4.8em + 8px);
-			}
-			.roster-info-text {
-				padding: 4px 32px;
-				transform: skewX(8.5deg);
-				max-width: 800px;
-				margin: 0 auto;
-			}
 
 			.players {
 				display: flex;
@@ -262,8 +254,7 @@
 				.player {
 					display: grid;
 					overflow: hidden;
-					font-size: 1.4em;
-					grid-template: 1fr 2em / 1fr;
+					grid-template: 1fr 2.8em / 1fr;
 					gap: 4px;
 					padding: 4px;
 					width: 260px;
@@ -276,10 +267,7 @@
 					transition: background-position ease-out 240ms;
 				}
 				.player:hover {
-					background-position: 50% 50%;
-				}
-				.player.active, .player.active:hover {
-					background-position: 50% 100%;
+					background-position: 50% 80%;
 				}
 					.player-picture-container {
 						overflow: hidden;
@@ -294,12 +282,26 @@
 						background-image: var(--bg);
 						background-size: 230% 200%;
 						background-position: 48% 21%;
+						display: grid;
+						align-items: center;
 					}
-					.player:hover > .player-picture-container,
-					.player.active > .player-picture-container {
+						.player-info {
+							font-size: min(2vw, 1.2em);
+							padding: 4px 20%;
+							background: #000A;
+							opacity: 0;
+							transition: opacity ease-out 240ms;
+						}
+
+					.player:hover > .player-picture-container {
 						opacity: 1;
 					}
+					.player:hover .player-info {
+						opacity: 1;
+					}
+
 					.player-name {
+						font-size: 1.4em;
 						text-align: center;
 						background: #000C;
 						box-sizing: content-box;
@@ -308,7 +310,6 @@
 
 
 		#rencontres {
-			/*min-height: calc(100vh - 73px);*/
 			display: grid;
 			grid-template: 100% / 100%;
 			align-items: center;
@@ -382,39 +383,63 @@
 			<div class="players">
 				<div class="player" data-action="display-player" data-id="0">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)"></div>
+						<div class="player-picture" style="--bg:url(./logo.svg)">
+							<div class="player-info">
+								<span class="bold">Pseudo:</span> Player A <br>
+								<span class="bold">Role:</span> Piou Piou <br>
+								<span class="bold">Victoires:</span> 9999 <br>
+							</div>
+						</div>
 					</div>
 					<span class="player-name"> Player A </span>
 				</div>
 				<div class="player" data-action="display-player" data-id="1">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)"></div>
+						<div class="player-picture" style="--bg:url(./logo.svg)">
+							<div class="player-info">
+								<span class="bold">Pseudo:</span> Player B <br>
+								<span class="bold">Role:</span> Piou Piou <br>
+								<span class="bold">Victoires:</span> 0 <br>
+							</div>
+						</div>
 					</div>
 					<span class="player-name"> Player B </span>
 				</div>
 				<div class="player" data-action="display-player" data-id="2">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)"></div>
+						<div class="player-picture" style="--bg:url(./logo.svg)">
+							<div class="player-info">
+								<span class="bold">Pseudo:</span> Player C <br>
+								<span class="bold">Role:</span> Piou Piou <br>
+								<span class="bold">Defaites:</span> 1000 <br>
+							</div>
+						</div>
 					</div>
 					<span class="player-name"> Player C </span>
 				</div>
 				<div class="player" data-action="display-player" data-id="3">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)"></div>
+						<div class="player-picture" style="--bg:url(./logo.svg)">
+							<div class="player-info">
+								<span class="bold">Pseudo:</span> Player D <br>
+								<span class="bold">Role:</span> Piou Piou <br>
+								<span class="bold">Match nul:</span> 786 <br>
+							</div>
+						</div>
 					</div>
 					<span class="player-name"> Player D </span>
 				</div>
 				<div class="player" data-action="display-player" data-id="4">
 					<div class="player-picture-container">
-						<div class="player-picture" style="--bg:url(./logo.svg)"></div>
+						<div class="player-picture" style="--bg:url(./logo.svg)">
+							<div class="player-info">
+								<span class="bold">Pseudo:</span> Player D <br>
+								<span class="bold">Role:</span> Piou Piou <br>
+								<span class="bold">Defaites:</span> 1 <br>
+							</div>
+						</div>
 					</div>
 					<span class="player-name"> Player E </span>
-				</div>
-			</div>
-			<div class="roster-info"> 
-				<div class="roster-info-text">
-					<span class="bold"> Roster: </span> Macuahuitl <br>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec condimentum elementum velit, sit amet malesuada dui aliquam vitae.
 				</div>
 			</div>
 		</div>

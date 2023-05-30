@@ -31,8 +31,6 @@ class AztecApp {
 		this.propos = document.getElementById('a-propos')
 		/**@type {HTMLDivElement} */
 		this.activePlayer = null
-		/**@type {HTMLDivElement} */
-		this.rosterInfoText = document.querySelector('.roster-info-text')
 		this.currentOpacity = -1
 
 		document.body.addEventListener('hash', e => this.onScroll(e))
@@ -48,9 +46,9 @@ class AztecApp {
 	}
 
 	onScroll(e) {
-		let opacity = 0.35
+		let opacity = 0.0
 		if (document.body.scrollTop+document.body.clientHeight*0.6 > this.propos.offsetTop)
-			opacity = 0.1
+			opacity = 0.0
 		if (document.body.scrollTop > document.body.scrollHeight-document.body.offsetHeight-100)
 			opacity = 1.0
 
@@ -64,7 +62,6 @@ class AztecApp {
 		const target = e.target.closest('[data-action]')
 		switch (target?.dataset.action) {
 		case 'scroll-to': return this.scrollTo(target.getAttribute('href'), e)
-		case 'display-player': return this.displayPlayer(target)
 		}
 	}
 
@@ -77,21 +74,6 @@ class AztecApp {
 		history.replaceState(undefined, undefined, id)
 		document.querySelector(id)
 			.scrollIntoView({ behavior:'smooth' })
-	}
-
-	/**
-	 * @param {HTMLDivElement} player */
-	displayPlayer(player) {
-		if (this.activePlayer === player)
-			return
-
-		this.activePlayer?.classList.remove('active')
-		this.activePlayer = player
-
-		this.activePlayer.classList.add('active')
-		const id = Number(player.dataset.id)
-		this.rosterInfoText.innerHTML = players[id]
-		player.classList.add('active')
 	}
 }
 
