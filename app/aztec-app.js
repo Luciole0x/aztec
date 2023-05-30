@@ -29,6 +29,8 @@ class AztecApp {
 		this.sponsors = document.getElementById('sponsors')
 		/**@type {HTMLElement} */
 		this.propos = document.getElementById('a-propos')
+		/**@type {HTMLElement} */
+		this.joinVideo = document.querySelector('.video-background')
 		/**@type {HTMLDivElement} */
 		this.activePlayer = null
 		this.currentOpacity = -1
@@ -36,6 +38,7 @@ class AztecApp {
 		document.body.addEventListener('hash', e => this.onScroll(e))
 		document.body.addEventListener('scroll', e => this.onScroll(e))
 		document.body.addEventListener('click', e => this.dispatchAction(e))
+		document.body.addEventListener('mouseenter', e => this.loadJoinVideo(e))
 
 		this.init()
 	}
@@ -74,6 +77,12 @@ class AztecApp {
 		history.replaceState(undefined, undefined, id)
 		document.querySelector(id)
 			.scrollIntoView({ behavior:'smooth' })
+	}
+
+	loadJoinVideo() {
+		console.log('loadJoinVideo')
+		if (!this.joinVideo.hasAttribute('src'))
+			this.joinVideo.setAttribute('src', './join-preview.webm')
 	}
 }
 
